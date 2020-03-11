@@ -1,5 +1,6 @@
 from hashlib import blake2b
 import numpy as np
+import json
 
 class Hash:
     def __init__(self, dataString):
