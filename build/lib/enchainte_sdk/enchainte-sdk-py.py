@@ -6,7 +6,7 @@ class EnchainteSDK:
         return
 
     def write(self, data):
-        return comms.send(data)
+        return comms.send(data.getHash())
 
     def getProof(self, data):
-        return comms.verify(data)
+        return comms.verify(data.getHash())
