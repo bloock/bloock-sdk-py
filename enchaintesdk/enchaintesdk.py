@@ -1,5 +1,5 @@
-import hash.hash as hash
-import comms.comms as comms
+import enchaintesdk.hash.hash as hash
+import enchaintesdk.comms.comms as comms
 #import json
 
 class EnchainteSDK:
@@ -19,12 +19,7 @@ class EnchainteSDK:
         #return comms.verify(data)
 
 '''
-newJsn = json.dumps({
-  "name": "John",
-  "age": 30,
-  "married": True,
-  "pets": None,
-})
+newJsn = json.dumps({"name": "John", "age": 30})
 en = EnchainteSDK()
 res = en.write_Json(newJsn)
 prof = en.getProof(newJsn)
