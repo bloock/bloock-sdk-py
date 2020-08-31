@@ -1,17 +1,20 @@
 from .writer import Writer
 from .verifier import Verifier
-from .entity.hash import Hash
-from .entity.proof import Proof
-from .comms.apiService import ApiService
-from .comms.web3Service import Web3Service
-from .utils.utils import Utils
+from enchaintesdk.entity.hash import Hash
+from enchaintesdk.entity.proof import Proof
+from enchaintesdk.comms.apiService import ApiService
+from enchaintesdk.comms.web3Service import Web3Service
+from enchaintesdk.utils.utils import Utils
+from enchaintesdk.writerTimer import WriterTimer
 import json
+from .utils.constants import SEND_INTERVAL
 
 
-class EnchainteSDK:
+class EnchainteClient:
     def __init__(self, apiKey):
         self.apiKey = apiKey
         ApiService.apiKey = apiKey
+        self.wTimer = WriterTimer(SEND_INTERVAL)
 
     # input: JSON, output: [String] containing the response's value form enchainte
     def write(self, data, data_type):
@@ -45,7 +48,7 @@ class EnchainteSDK:
         parsedBitmap = Utils.hexToBytes(proof.bitmap)
         root = Verifier.verify(parsedLeaves, parsedNodes,
                                parsedDepth, parsedBitmap)
-        web3value = Web3Service.validateRoot(root)
+        web3value = Web3Service.validateRoot(Utils.bytesToHex(root))
         return web3value
 
     def getMessages(self, hashes):

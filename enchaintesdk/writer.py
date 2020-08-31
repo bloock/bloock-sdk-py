@@ -1,31 +1,36 @@
-from .utils.utils import SetInterval
-from .utils.constants import SEND_INTERVAL
 from .utils.deferred import Deferred
 from .entity.hash import Hash
 from .comms.apiService import ApiService
+from weakref import WeakValueDictionary
 
 
 class Writer:
-    __instance = None
-    __tasks = {}
+    """ Writer is a Singleton in charge of storing all hashes before been sent through
+        Enchainte's API."""
 
-    def __init__(self):
-        if self.__instance == None:
-            SetInterval(SEND_INTERVAL, self)
+    __instance = WeakValueDictionary()
 
-    @staticmethod
-    def getInstance():
-        if Writer.__instance == None:
-            return Writer()
-        return Writer.__instance
+    def __new__(cls, *args, **kwargs):
+        if cls not in cls.__instance:
+            instance = super(Writer, cls).__new__(cls, *args, **kwargs)
+            cls.__tasks = {}
+            cls.__instance[cls] = instance
+        return cls.__instance[cls]
 
     def push(self, value, resolve, reject):
+        ''' Adds a sigle new Hash ("value") to the dictionary "tasks" and returns its
+            related Deferred object with "resolve"/"reject" as callbacks.'''
+
         deferred = Deferred(resolve, reject)
         self.__tasks[value] = deferred
         return deferred
 
     @staticmethod
     def send():
+        ''' Sends to Enchainte API all Hashes stored inside "tasks", cleans the dictionary
+            and updates the Deferred promise depending in if the related Hash was
+            succesfully recived by the API or not.'''
+
         if not Writer.__tasks:
             return
         currentTasks = Writer.__tasks
@@ -33,12 +38,21 @@ class Writer:
 
         dataToSend = []
         for key in currentTasks:
-            dataToSend.append(key.getHash())
+            dataToSend.append(key)
 
         try:
-            ApiService.write(dataToSend)
-            for task in currentTasks:
-                task.promise = True
+            writenTask = ApiService.write(dataToSend)
+            for task in dataToSend:
+                if task.getHash() in writenTask:
+                    currentTasks[task].promise = True
+                else:
+                    currentTasks[task].promise = False
         except:
             for task in currentTasks:
-                task.promise = False
+                currentTasks[task].promise = False
+
+    @staticmethod
+    def getInstance():
+        ''' Returns the singleton Writer instance.'''
+
+        return Writer()

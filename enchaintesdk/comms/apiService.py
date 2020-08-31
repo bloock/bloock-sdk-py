@@ -55,7 +55,8 @@ class ApiService:
     def getMessages(dataH):
         data = [x.getHash() for x in dataH]
         response = requests.post(url=API_URL+'/message/fetch',
-                                 json={'hashes': data}, headers={'Authorization': 'Bearer ' + ApiService.apiKey})
+                                 json={'hashes': data},
+                                 headers={'Authorization': 'Bearer ' + ApiService.apiKey})
 
         try:
             if response.ok:

@@ -1,6 +1,7 @@
 from enchaintesdk.utils.utils import *
 import unittest
 import numpy as np
+import time
 
 
 class TestUtils(unittest.TestCase):

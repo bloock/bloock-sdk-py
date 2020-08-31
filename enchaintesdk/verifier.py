@@ -15,6 +15,8 @@ class Verifier:
             act_depth = depths[it_nodes + it_leaves]
             is_leaf = (bitmap[it_bitmap] & (1 << (7 - (curr_bit % 8)))) < 1
             curr_bit += 1
+            if curr_bit % 8 == 0:
+                it_bitmap += 1
 
             if is_leaf:
                 act_hash = leaves[it_leaves]

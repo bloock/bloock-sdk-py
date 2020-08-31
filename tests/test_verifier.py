@@ -5,7 +5,7 @@ from enchaintesdk.entity.hash import Hash
 
 
 class TestVerifier(unittest.TestCase):
-    def test_verify_1_leaf(self):
+    """def test_verify_1_leaf(self):
         leaves = [np.array([0]*32, dtype='uint8')]
         nodes = []
         depths = np.array([0], dtype='uint8')
@@ -134,4 +134,4 @@ class TestVerifier(unittest.TestCase):
         root = np.array([236, 45, 107, 94, 128, 193, 173, 148, 130, 182, 250, 30, 47, 54, 61, 144,
                          13, 74, 126, 158, 114, 161, 132, 252, 253, 103, 236, 44, 168, 232, 117, 234], dtype='uint8')
         nroot = Verifier.verify(leaves, nodes, depths, bitmap)
-        self.assertTrue(Hash.identicalKeys(root, nroot))
+        self.assertTrue(Hash.identicalKeys(root, nroot))"""
