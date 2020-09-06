@@ -1,6 +1,7 @@
 from enchaintesdk.entity.hash import Hash
 import unittest
 import numpy as np
+import json
 
 
 class TestHash(unittest.TestCase):
@@ -28,6 +29,16 @@ class TestHash(unittest.TestCase):
             h.getHash(),
             'e283ce217acedb1b0f71fc5ebff647a1a17a2492a6d2f34fb76b994a23ca8931'
         ))
+
+    def test_fromJson(self):
+        j1 = '{"color":"gold","null":null, "number":  123,"object":  {"a":"b","c":"d"},"string":"Hello World","array":[1,2,3],"boolean":true}'
+        r1 = Hash.fromJson(j1).getHash()
+        self.assertEqual(
+            r1, 'd8a82f8d74e0665f9604cd2e8f76a88a478a3d22068fa074c444158ea3d08887')
+        j2 = '{"array":[1,2,3],"boolean":true",color":"gold","null":null, "number":  123,"object":  {"a":"b","c":"d"},"string":"Hello World"}'
+        r2 = Hash.fromJson(j2).getHash()
+        self.assertEqual(
+            r2, 'd8a82f8d74e0665f9604cd2e8f76a88a478a3d22068fa074c444158ea3d08887')
 
     def test_fromHash(self):
         h = Hash.fromHash(

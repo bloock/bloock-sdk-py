@@ -47,9 +47,10 @@ class Writer:
                     currentTasks[task].promise = True
                 else:
                     currentTasks[task].promise = False
-        except:
+        except BaseException as e:
             for task in currentTasks:
                 currentTasks[task].promise = False
+                currentTasks[task].reject = e
 
     @staticmethod
     def getInstance():

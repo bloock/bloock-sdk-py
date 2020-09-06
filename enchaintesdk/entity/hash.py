@@ -1,6 +1,5 @@
 from hashlib import blake2b
 import numpy as np
-from collections import deque
 import json
 from ..utils.utils import Utils
 
@@ -59,40 +58,3 @@ class Hash:
     @staticmethod
     def sort(hashes):
         return sorted(hashes, key=lambda h: h.getHash())
-
-    """@staticmethod
-    def verifyProof(leaves, proof):
-        '''Validates de correctness of the proof return by the Enchainte Api.
-        - Inputs::  leaves: list of hashes from the leaves sent to Enchainte in hexadecimal strings.
-                    proof: dictionary returned from Enchainte.
-        - Output::  boolean: True if the current proof is valid.'''
-
-        dic_bm = proof['bitmap']
-        dic_de = proof['depth']
-        dic_no = proof['nodes']
-        bitmap = [np.uint8(int(dic_bm[i:i+2],16)) for i in range(0, len(str_bm), 2)]
-        mp_depth = [np.uint8(int(dic_de[i:i+2],16)) for i in range(0, len(str_de), 2)]
-        nodes = [[h for h in n.replace('[','').split(',')] for n in str_no.split(']')] # suposo que ho parsejo a la llista de lista d'uint8
-
-        it_leaves = 0
-        it_nodes = 0
-        it_bitmap = 0
-        curr_bit = 0
-        stack = deque()
-        while it_nodes < nodes.len()-1 or it_leaves < leaves.len():
-            is_leaf = bitmap[it_bitmap] & (1 << (7 - (curr_bit%8))) > 0
-            if is_leaf:
-                act_hash = leaves[it_leaves]
-            else:
-                act_hash = nodes[it_nodes]"""
-
-
-'''
-newJsn = json.dumps({
-  "name": "John",
-  "age": 30,
-  "married": True,
-  "pets": None,
-})
-hs = Hash(newJsn).fromJson()
-print(hs.getHash())'''

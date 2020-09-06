@@ -1,7 +1,6 @@
 import json
 import requests
 from requests.exceptions import RequestException
-import asyncio
 from ..entity.message import Message
 from ..utils.constants import API_URL
 from ..entity.hash import Hash

@@ -16,8 +16,12 @@ class EnchainteClient:
         ApiService.apiKey = apiKey
         self.wTimer = WriterTimer(SEND_INTERVAL)
 
-    # input: JSON, output: [String] containing the response's value form enchainte
     def write(self, data, data_type):
+        ''' Inputs a "data" value and its type to return to return a "deferred" object containing
+            its the state inside the Enchainte API (queued, sent or failed). Current accepted datatypes
+            are: hexadecimal strings "hex", strings "str", byte arrays "u8a", "json", and enchainte's
+            hash objects "Hash".'''
+
         if data_type == 'hex':
             hs = Hash.fromHex(data)
         elif data_type == 'str':
@@ -34,12 +38,17 @@ class EnchainteClient:
         return subscription.push(hs, True, False)  # s'ha de canviar òbviament
 
     def getProof(self, hashes):
+        ''' Returns a "Proof" object for a given "list of Hash" elements.'''
+
         if not (hashes and isinstance(hashes, list) and all(isinstance(x, Hash)) for x in hashes):
             return ValueError
         sorted_hashes = Hash.sort(hashes)
         return ApiService.getProof(sorted_hashes)
 
     def verify(self, proof):
+        ''' Returns a boolean asserting if the root obtained form the "Proof" input is successfully
+            inserted in a blockchain block.'''
+
         if not proof.isValid():
             return ValueError('Proof is no valid')
         parsedLeaves = [Utils.hexToBytes(x) for x in proof.leaves]
@@ -52,6 +61,9 @@ class EnchainteClient:
         return web3value
 
     def getMessages(self, hashes):
+        ''' Returns a list of "Message" elements containing rellevant information about the 
+            list of "Hash" elements recived as input.'''
+
         if not (hashes and isinstance(hashes, list) and all(isinstance(x, Hash)) for x in hashes):
             return ValueError
         return ApiService.getMessages(hashes)
