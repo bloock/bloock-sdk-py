@@ -6,7 +6,7 @@ import json
 
 
 class TestEnd2end(unittest.TestCase):
-    def test_end2end_success(self):
+    '''def test_end2end_success(self):
         sdk = EnchainteClient(
             'gj6mIevvurbf0466EMTWk3pCiF9ZzTxqIl81Sjtfn80DC37yFW4QbHpJp-2uBEOH')
         h = Hash.fromString('Jordi ')
@@ -35,3 +35,4 @@ class TestEnd2end(unittest.TestCase):
             valid = sdk.verify(proof)
             time.sleep(10)
             print('valid: ' + str(valid))
+    '''

@@ -35,7 +35,7 @@ class TestHash(unittest.TestCase):
         r1 = Hash.fromJson(j1).getHash()
         self.assertEqual(
             r1, 'd8a82f8d74e0665f9604cd2e8f76a88a478a3d22068fa074c444158ea3d08887')
-        j2 = '{"array":[1,2,3],"boolean":true",color":"gold","null":null, "number":  123,"object":  {"a":"b","c":"d"},"string":"Hello World"}'
+        j2 = '{"array": [1,2,3],"boolean":true,"color":"gold","null":null, "number":  123,"object":  {"a":"b","c":"d"},"string":"Hello World"}'
         r2 = Hash.fromJson(j2).getHash()
         self.assertEqual(
             r2, 'd8a82f8d74e0665f9604cd2e8f76a88a478a3d22068fa074c444158ea3d08887')

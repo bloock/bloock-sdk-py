@@ -16,7 +16,7 @@ class EnchainteClient:
         ApiService.apiKey = apiKey
         self.wTimer = WriterTimer(SEND_INTERVAL)
 
-    def write(self, data, data_type):
+    def write(self, data, data_type, resolve, reject):
         ''' Inputs a "data" value and its type to return to return a "deferred" object containing
             its the state inside the Enchainte API (queued, sent or failed). Current accepted datatypes
             are: hexadecimal strings "hex", strings "str", byte arrays "u8a", "json", and enchainte's
@@ -35,7 +35,7 @@ class EnchainteClient:
         else:
             return ValueError('Non valid data_type value.')
         subscription = Writer.getInstance()
-        return subscription.push(hs, True, False)  # s'ha de canviar òbviament
+        return subscription.push(hs, resolve, reject)
 
     def getProof(self, hashes):
         ''' Returns a "Proof" object for a given "list of Hash" elements.'''

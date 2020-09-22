@@ -23,7 +23,6 @@ class Writer:
 
         deferred = Deferred(resolve, reject)
         self.__tasks[value] = deferred
-        return deferred
 
     @staticmethod
     def send():
@@ -44,13 +43,12 @@ class Writer:
             writenTask = ApiService.write(dataToSend)
             for task in dataToSend:
                 if task.getHash() in writenTask:
-                    currentTasks[task].promise = True
+                    currentTasks[task].resolve()
                 else:
-                    currentTasks[task].promise = False
+                    currentTasks[task].reject(BaseException('Element with hash "' + task + '" was not sent to Enchainte'))
         except BaseException as e:
             for task in currentTasks:
-                currentTasks[task].promise = False
-                currentTasks[task].reject = e
+                currentTasks[task].reject(e)
 
     @staticmethod
     def getInstance():
