@@ -1,7 +1,8 @@
-from enchaintesdk.utils.utils import *
+from enchaintesdk.utils.utils import Utils
 import unittest
 import numpy as np
 import time
+
 
 
 class TestUtils(unittest.TestCase):
@@ -16,3 +17,16 @@ class TestUtils(unittest.TestCase):
 
     def test_hexToBytes_success(self):
         self.assertTrue(Utils.hexToBytes('0a')[0] == 10)
+
+    def test_periodic_task(self):
+        @Utils.periodic_task(0.1)
+        def sum1(l):
+            l[0] = l[0] + 1
+        
+        l = [0]
+        algo = sum1(l)
+        time.sleep(0.3)
+        algo.set()
+        time.sleep(1.1)
+        time.sleep(1.1)
+        self.assertEqual(l[0], 3)

@@ -2,10 +2,10 @@ import unittest
 from unittest import mock
 import numpy as np
 from requests.exceptions import RequestException
-from enchaintesdk.entity.hash import Hash
+from enchaintesdk.entity.message import Message
 from enchaintesdk.comms.apiService import ApiService
 from enchaintesdk.utils.constants import API_URL, API_KEY
-from enchaintesdk.entity.message import Message
+from enchaintesdk.entity.messageReceipt import MessageReceipt
 
 
 def mocked_requests_post(*args, **kwargs):

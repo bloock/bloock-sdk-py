@@ -1,2 +1,2 @@
-from enchaintesdk.entity.hash import Hash
+from enchaintesdk.entity.message import Message
 from enchaintesdk.enchainteClient import EnchainteClient

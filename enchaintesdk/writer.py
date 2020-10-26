@@ -1,14 +1,17 @@
 from .utils.deferred import Deferred
-from .entity.hash import Hash
+from .utils.utils import Utils
+from .comms.configService import ConfigService
+from .entity.message import Message
 from .comms.apiService import ApiService
 from weakref import WeakValueDictionary
 
 
 class Writer:
-    """ Writer is a Singleton in charge of storing all hashes before been sent through
+    """ Writer is a Singleton in charge of storing all messages before been sent through
         Enchainte's API."""
 
     __instance = WeakValueDictionary()
+    __config = [None]
 
     def __new__(cls, *args, **kwargs):
         if cls not in cls.__instance:
@@ -23,8 +26,10 @@ class Writer:
 
         deferred = Deferred(resolve, reject)
         self.__tasks[value] = deferred
+        return deferred
 
     @staticmethod
+    @Utils.periodic_task(2) #will need to be update to write interval
     def send():
         ''' Sends to Enchainte API all Hashes stored inside "tasks", cleans the dictionary
             and updates the Deferred promise depending in if the related Hash was
@@ -40,12 +45,12 @@ class Writer:
             dataToSend.append(key)
 
         try:
-            writenTask = ApiService.write(dataToSend)
+            writenTask = ApiService.write(dataToSend, Writer.__config[0])
             for task in dataToSend:
-                if task.getHash() in writenTask:
+                if task.getMessage() in writenTask:
                     currentTasks[task].resolve()
                 else:
-                    currentTasks[task].reject(BaseException('Element with hash "' + task + '" was not sent to Enchainte'))
+                    currentTasks[task].reject(BaseException('Element with message "' + task + '" was not sent to Enchainte'))
         except BaseException as e:
             for task in currentTasks:
                 currentTasks[task].reject(e)
@@ -55,3 +60,11 @@ class Writer:
         ''' Returns the singleton Writer instance.'''
 
         return Writer()
+
+    
+    def get_config(self):
+        return self.__config[0]
+    
+    @staticmethod
+    def set_config(c):
+        Writer.__config = c 

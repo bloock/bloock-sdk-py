@@ -1,4 +1,6 @@
 import numpy as np
+import threading
+import time
 
 
 class Utils:
@@ -37,3 +39,26 @@ class Utils:
                 result += '0'
             result += value
         return result
+
+    @staticmethod
+    def periodic_task(interval):
+        ''' Decorator method for executing a function periodically in a 
+            different thread. Interval represents the time between 
+            executions, and killers a list with only one bool that when
+            when set True stops the execution.'''
+            
+        def outer_wrap(function):
+            def wrap(*args, **kwargs):
+                stop = threading.Event()
+                def inner_wrap():
+                    nextTime = time.time()+interval
+                    while not stop.isSet() and not stop.wait(nextTime-time.time()):
+                        nextTime += interval
+                        function(*args, **kwargs)
+
+                t = threading.Timer(0, inner_wrap)
+                #t.daemon = True
+                t.start()
+                return stop
+            return wrap
+        return outer_wrap

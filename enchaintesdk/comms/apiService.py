@@ -1,23 +1,24 @@
 import json
 import requests
 from requests.exceptions import RequestException
+from ..entity.messageReceipt import MessageReceipt
 from ..entity.message import Message
-from ..utils.constants import API_URL
-from ..entity.hash import Hash
 from ..entity.proof import Proof
 
 
+
+#CONFIG: API_URL
 class ApiService:
     apiKey = ""
 
     @staticmethod
-    def write(dataH):
+    def write(dataH, config):
         ''' Sends to EnchainteApi a "list of Hashes" (dataH), and returns or a "list of strings"
             containg newly inserted leaves or an Exception.'''
 
         try:
-            data = [x.getHash() for x in dataH]
-            response = requests.post(url=API_URL+'/write',
+            data = [x.getMessage() for x in dataH]
+            response = requests.post(url=config.host + config.write_endpoint,
                                      json={'hashes': data},
                                      headers={'Authorization': 'Bearer ' + ApiService.apiKey})
             res_json = response.json()
@@ -31,13 +32,13 @@ class ApiService:
             raise e
 
     @staticmethod
-    def getProof(dataH):
+    def getProof(dataH, config):
         ''' Sends to EnchainteApi a "list of Hashes" (dataH), and returns or a "Proof" for the
             previous set of leaves or an Exception.'''
 
         try:
-            data = [x.getHash() for x in dataH]
-            response = requests.post(url=API_URL+'/proof',
+            data = [x.getMessage() for x in dataH]
+            response = requests.post(url=config.host + config.proof_endpoint,
                                      json={'hashes': data},
                                      headers={'Authorization': 'Bearer ' + ApiService.apiKey})
             res_json = response.json()
@@ -51,9 +52,9 @@ class ApiService:
             raise e
 
     @staticmethod
-    def getMessages(dataH):
-        data = [x.getHash() for x in dataH]
-        response = requests.post(url=API_URL+'/message/fetch',
+    def getMessages(dataH, config):
+        data = [x.getMessage() for x in dataH]
+        response = requests.post(url=config.host + config.fetch_endpoint,
                                  json={'hashes': data},
                                  headers={'Authorization': 'Bearer ' + ApiService.apiKey})
 
@@ -65,7 +66,7 @@ class ApiService:
                     return result
                 for mes in res_json:
                     result.append(
-                        Message(mes['root'], mes['message'], mes['tx_hash'], mes['status'], mes['error']))
+                        MessageReceipt(mes['root'], mes['message'], mes['tx_hash'], mes['status'], mes['error']))
                 return result
             else:
                 raise RequestException(

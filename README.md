@@ -20,12 +20,12 @@ The following examples summarize how to access the different functionalities ava
 
 ### Prepare data
 
-In order to interact with the SDK data can, but it is not mandatory, be processed through the Hash module.
+In order to interact with the SDK data can, but it is not mandatory, be processed through the Message module.
 
-There are several ways to generate a Hash:
+There are several ways to generate a Message:
 
 ```python
-from enchaintesdk import Hash
+from enchaintesdk import Message
 import numpy as np
 import json
 
@@ -33,23 +33,24 @@ import json
 j = json.dumps({
     'data': 'Example Data'
     })
-Hash.fromJson(j)
+Message.fromJson(j)
 
-# From a hash string (hex encoded 64-chars long string)
-Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
+# From a message string (hex encoded 64-chars long string)
+Message.fromMessage('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
 
 # From a hex encoded string
-Hash.fromHex('0123456789abcdef')
+
+Message.fromHex('0123456789abcdef')
 
 # From a string
-Hash.fromString('Example Data')
+Message.fromString('Example Data')
 
 # From a Uint8Array with a lenght of 32
 u8Array = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype='uint8')
-Hash.fromUint8Array(u8Array)
+Message.fromUint8Array(u8Array)
 
-# Retrieve the computed hash
-Hash.fromUint8Array(u8Array).getHash()
+# Retrieve the computed message
+Message.fromUint8Array(u8Array).getMessage()
 ```
 
 ### Write messages
@@ -67,14 +68,14 @@ client = EnchainteClient(apiKey)
 try:
 	client.write('Example Data', 
         'str',
-        lambda: print('message sent'),
+        lambda: pass,
         lambda e: print('an error was found: '+ str(e)))
 except BaseException:
 	raise
 
 ```
 
-The accepted data types are: hexadecimal strings as "hex" (without "0x" at the begining), any other kind of string as "str", byte arrays as "u8a", jsons as "json", and Enchainte's Hash objects as "hash".
+The accepted data types are: hexadecimal strings as "hex" (without "0x" at the begining), any other kind of string as "str", byte arrays as "u8a", jsons as "json", and Enchainte's Message objects as "message".
 
 Also note that it is required to pass two callbacks to write. They are executed once the message was been recived by the server (the first one), or if any exeption occurs while trying.
 
@@ -83,7 +84,7 @@ Also note that it is required to pass two callbacks to write. They are executed 
 This example shows how to get a proof for an array of messages and validate it:
 
 ```python
-from enchaintesdk import EnchainteClient, Hash
+from enchaintesdk import EnchainteClient, Message
 import os
 
 apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
@@ -91,14 +92,15 @@ apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
 client = EnchainteClient(apiKey)
 
 messages = [
-    Hash.fromString('Example Data 1'),
-    Hash.fromString('Example Data 2'),
-    Hash.fromString('Example Data 3')
+    Message.fromString('Example Data 1'),
+    Message.fromString('Example Data 2'),
+    Message.fromString('Example Data 3')
 ]
 
 try:
 	proof = client.getProof(messages)
-	is_valid_boolean = client.verify(proof)
+	is_valid_boolean = client.verifyProof(proof)
+    # or simply: is_valid_boolean = client.verifyMessages(messages)
 except BaseException:
 	raise
 ```
@@ -108,21 +110,21 @@ except BaseException:
 This example shows how to get all the details and status of messages:
 
 ```python
-from enchaintesdk import EnchainteClient, Hash
+from enchaintesdk import EnchainteClient, Message
 import os
 
 apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
 
 client = EnchainteClient(apiKey)
 
-hashes = [
-    Hash.fromString('Example Data 1'),
-    Hash.fromString('Example Data 2'),
-    Hash.fromString('Example Data 3')
+messages = [
+    Message.fromString('Example Data 1'),
+    Message.fromString('Example Data 2'),
+    Message.fromString('Example Data 3')
 ]
 
 try:
-	messages = client.getMessages(hashes)
+	messages = client.getMessages(messages)
 except BaseException:
 	raise
 ```
@@ -134,13 +136,13 @@ This snippet shows a complete data cycle including: write, message status pollin
 ```python
 #!/usr/bin/env python3
 
-from enchaintesdk import EnchainteClient, Hash
+from enchaintesdk import EnchainteClient, Message
 import random
 import time
 import os
 
 def randHex(l):
-    ''' Helper function to generate a random hash.'''
+    ''' Helper function to generate a random message.'''
     val = [int(random.uniform(0, 256)) for x in range(0,l)]
     result = ''
     for n in val:
@@ -153,12 +155,12 @@ def main():
 
     client = EnchainteClient(apiKey)
 
-    h = Hash.fromString(randHex(64))
+    h = Message.fromString(randHex(64))
     try:
         # Writing message
-        client.write(h.getHash(), 
+        client.write(h.getMessage(), 
             'hex',
-            lambda: print('Message writen.'),
+            lambda: pass,
             lambda e: print('An error has occurred: '+ str(e))
         )
         
@@ -181,7 +183,7 @@ def main():
         valid = False
         while not valid:
             time.sleep(0.5)
-            valid = client.verify(proof)
+            valid = client.verifyProof(proof)
             print('Message validation - %s' % valid)
         
         print('Finished!')

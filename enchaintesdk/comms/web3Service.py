@@ -1,14 +1,14 @@
 from web3 import Web3
-from ..entity.hash import Hash
-from ..utils.constants import *
+from ..entity.message import Message
 import json
 
 
 class Web3Service:
-    w3 = Web3(Web3.WebsocketProvider(WEB3_PROVIDER))
-    contract = w3.eth.contract(
-        address=CONTRACT_ADDRESS, abi=CONTRACT_ABI)
 
     @staticmethod
-    def validateRoot(root):
-        return Web3Service.contract.functions.getCheckpoint('0x'+root).call()
+    def validateRoot(root, config):
+        #w3 = Web3(Web3.WebsocketProvider(config.provider))
+        w3 = Web3(Web3.HTTPProvider(config.http_provider))
+        contract = w3.eth.contract(
+            address=config.contract_address, abi=config.contract_abi)
+        return contract.functions.getCheckpoint('0x'+root).call()
