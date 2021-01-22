@@ -10,4 +10,4 @@ steps:
     distributions:
     - sdist
     - bdist_wheel
-    setupfile: enchainte-sdk-py/setup.py
+    setupfile: setup.py
