@@ -11,7 +11,7 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    repository: https://test.pypi.org/simple/
+    repository: https://test.pypi.org/legacy/
     distributions:
     - sdist
     - bdist_wheel
