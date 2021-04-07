@@ -1,0 +1,18 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: pypi_publish
+  image: plugins/pypi
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repository: https://test.pypi.org/legacy/
+    distributions:
+    - sdist
+    - bdist_wheel
+    setupfile: setup.py
