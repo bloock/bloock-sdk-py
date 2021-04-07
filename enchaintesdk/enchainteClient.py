@@ -10,11 +10,8 @@ class EnchainteClient:
     def __init__(self, apiKey):
         self.apiKey = apiKey
         self.configService = ConfigService()
-        self.config = [self.configService.getConfig()]
-        Writer.set_config(self.config)
         ApiService.apiKey = apiKey
         self.writer = Writer.getInstance()
-        self.writer.send()
 
     def write(self, data, data_type, resolve, reject):
         ''' Inputs a "data" value and its type to return to return a "deferred" object containing
