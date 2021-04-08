@@ -20,6 +20,8 @@ setuptools.setup(
     ],
     install_requires=['numpy>=1.18.0',
                       'requests>=2.24.0',
-                      'web3>=5.6.0'],
+                      'web3>=5.6.0',
+                      'pycryptodome'],
+
     python_requires='>=3.5',
 )

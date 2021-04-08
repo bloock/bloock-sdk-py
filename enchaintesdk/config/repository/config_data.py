@@ -2,15 +2,22 @@ from ..entity.configuration_entity import Configuration
 
 
 class ConfigData:
+    ''' Class in charge of initializing and providing the API's
+        configuration.
+    '''
     __config = Configuration()
 
     def __init__(self):
         pass
 
     def getConfiguration(self) -> Configuration:
+        ''' Returns the Configuration object.'''
         return self.__config
 
     def setTestConfiguration(self) -> Configuration:
+        ''' Initializes the Configuration object with data to work 
+            on a test environment.
+        '''
         self.__config.host = "http://dev.enchainte.com"
         self.__config.api_version = "/v1"
         self.__config.contract_address = "0x209572b3ef8911E87F1143ef3B1Bc2f7e7fa3016"
@@ -21,6 +28,9 @@ class ConfigData:
         return self.__config
 
     def setConfiguration(self) -> Configuration:
+        ''' Initializes the Configuration object with data to work 
+            on a production environment.
+        '''
         self.__config.host = "https://api.enchainte.com"
         self.__config.api_version = "/v1"
         self.__config.contract_address = "0x30f834845E62956499889D56B18a2DB8C6D53Bd1"

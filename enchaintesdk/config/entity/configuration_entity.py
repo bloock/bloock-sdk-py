@@ -1,4 +1,9 @@
 class Configuration:
+    ''' Object holder of all information related to
+        configuring the connection with Enchainte's
+        API.
+    '''
+
     def __init__(self):
         self.host = ""
         self.api_version = ""
