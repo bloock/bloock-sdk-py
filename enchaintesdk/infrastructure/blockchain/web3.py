@@ -1,10 +1,9 @@
 import json
 from web3 import Web3
-from ..blockchain_client import BlockchainClient
 from enchaintesdk.config.service.config_service import ConfigService
 
 
-class Web3Client (BlockchainClient):
+class Web3Client:
     ''' Object in charge of connecting to blockchain.'''
 
     def __init__(self, configService: ConfigService):
@@ -16,7 +15,7 @@ class Web3Client (BlockchainClient):
             string (with no "0x" in front) returns the timestamp as int/float 
             of its insertion in the blockchain. '''
         config = self.__config_service.getConfiguration()
-        web3 = Web3(Web3.WebsocketProvider(config.provider))
+        web3 = Web3(Web3.HTTPProvider(config.http_provider))
         contract = web3.eth.contract(
-            address=config.contract_address, abi=config.contract_abi)
-        return contract.functions.getCheckpoint('0x'+root).call()
+            address=config.contract_address, abi=json.loads(config.contract_abi))
+        return contract.functions.getState('0x'+root).call()

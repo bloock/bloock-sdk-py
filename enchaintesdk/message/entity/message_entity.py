@@ -1,14 +1,14 @@
-from enchaintesdk.infrastructure.hashing_client import HashingClient
-from enchaintesdk.infrastructure.hashing.blake2b import Blake2b
+#from enchaintesdk.infrastructure.hashing.blake2b import Blake2b
+from enchaintesdk.infrastructure.hashing.keccak import Keccak
 from enchaintesdk.shared.utils import Utils
 import numpy as np
 
 
 class Message:
-    __hashAlgorithm: HashingClient = Blake2b()
+    __hashAlgorithm = Keccak()
 
     def __init__(self, hash: str):
-        self.hash = hash
+        self.__hash = hash
 
     @staticmethod
     def from_(data):
@@ -16,14 +16,14 @@ class Message:
         return Message.fromString(Utils.stringify(data))
 
     @staticmethod
-    def fromHash(self, hash: str):
+    def fromHash(hash: str):
         '''Returns message'''
         return Message(hash)
 
     @staticmethod
     def fromHex(hex: str):
         '''Returns message'''
-        dataArray = Utils.hexToBytes(hex)
+        dataArray = bytes.fromhex(hex)
         return Message(Message.__hashAlgorithm.generateHash(dataArray))
 
     @staticmethod
@@ -33,14 +33,20 @@ class Message:
         return Message(Message.__hashAlgorithm.generateHash(dataArray))
 
     @staticmethod
-    def fromUint8Array(uint8Array: [np.uint8]):
+    def fromBytes(b: bytes):
         '''Returns message'''
-        return Message(Message.__hashAlgorithm.generateHash(uint8Array))
+        return Message(Message.__hashAlgorithm.generateHash(b))
 
     @staticmethod
-    def sort(messages: [Message]):
+    def fromUint8Array(uint8Array: [np.uint8]):
         '''Returns message'''
-        return messages.sort(key=lambda x: x.getHash().upper())
+        return Message(Message.__hashAlgorithm.generateHash(uint8Array.tobytes()))
+
+    @staticmethod
+    def sort(messages):
+        '''Input: [Messages]. Returns message'''
+        messages.sort(key=lambda x: x.getHash().upper())
+        return messages
 
     @staticmethod
     def isValid(message) -> bool:
@@ -52,7 +58,12 @@ class Message:
         return False
 
     def getHash(self) -> str:
-        return self.hash
+        return self.__hash
 
     def getUint8ArrayHash(self) -> [np.uint8]:
-        return Utils.hexToBytes(self.hash)
+        return Utils.hexToUint8Array(self.__hash)
+
+    '''@staticmethod
+    def merge(left: [np.uint8], right: [np.uint8]) -> [np.uint8]:
+        return Message.fromUint8Array(np.concatenate([left, right])).getUint8ArrayHash()
+    '''

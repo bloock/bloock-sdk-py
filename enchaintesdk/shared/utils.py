@@ -2,7 +2,6 @@ import numpy as np
 import json
 import string
 from time import sleep
-from enchaintesdk.message.entity.message_entity import Message
 
 
 class Utils:
@@ -12,11 +11,11 @@ class Utils:
 
     @staticmethod
     def stringToBytes(string: str) -> [np.uint8]:
-        return np.frombuffer(bytes.fromString(string), dtype=np.uint8)
+        return np.frombuffer(str.encode(string), dtype=np.uint8).tobytes()
 
     @staticmethod
-    def hexToBytes(hex: str) -> [np.uint8]:
-        return np.frombuffer(bytes.fromhex(hex), dtype=np.uint8)
+    def hexToUint8Array(hex: str) -> [np.uint8]:
+        return np.frombuffer(bytes.fromhex(hex), dtype=np.uint8).tobytes()
 
     @staticmethod
     def bytesToString(array: [np.uint8]) -> str:
@@ -28,12 +27,8 @@ class Utils:
 
     @staticmethod
     def isHex(h: str) -> bool:
-        all(e in string.hexdigits for e in h)
+        return all(e in string.hexdigits for e in h)
 
     @staticmethod
     def sleep(ms: int):
         return sleep(ms / 1000)
-
-    @staticmethod
-    def merge(left: [np.uint8], right: [np.uint8]) -> [np.uint8]:
-        return Message.fromUint8Array(np.concatenate([left, right]).getUint8ArrayHash()
