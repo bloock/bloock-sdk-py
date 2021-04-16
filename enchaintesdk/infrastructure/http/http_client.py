@@ -3,7 +3,6 @@ from requests.exceptions import RequestException
 from .http_data import HttpData
 from .dto.api_response_entity import ApiResponse
 from .exception.http_exception import HttpRequestException
-import json
 
 
 class HttpClient:

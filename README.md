@@ -20,7 +20,7 @@ The following examples summarize how to access the different functionalities ava
 
 ### Prepare data
 
-In order to interact with the SDK data can, but it is not mandatory, be processed through the Message module.
+In order to interact with the SDK data must be processed through the Message module.
 
 There are several ways to generate a Message:
 
@@ -29,14 +29,12 @@ from enchaintesdk import Message
 import numpy as np
 import json
 
-# From a JSON
-j = json.dumps({
-    'data': 'Example Data'
-    })
-Message.fromJson(j)
+# From a dict
+d = {'data': 'Example Data'}
+Message.fromDict(d)
 
-# From a message string (hex encoded 64-chars long string)
-Message.fromMessage('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
+# From a hash string (hex encoded 64-chars long string)
+Message.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
 
 # From a hex encoded string
 
@@ -45,7 +43,10 @@ Message.fromHex('0123456789abcdef')
 # From a string
 Message.fromString('Example Data')
 
-# From a Uint8Array with a lenght of 32
+# From a bytes
+Message.fromBytes(b'Example Data')
+
+# From a Uint8Array
 u8Array = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], dtype='uint8')
 Message.fromUint8Array(u8Array)
 
@@ -58,18 +59,16 @@ Message.fromUint8Array(u8Array).getMessage()
 This example shows how to send data to Enchainté.
 
 ```python
-from enchaintesdk import EnchainteClient
+from enchaintesdk import EnchainteClient, Message
+from enchaintesdk.
 import os
 
-apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
-
-client = EnchainteClient(apiKey)
+apiKey = os.getenv("ENCHAINTE_APIKEY", default='api_key')
+client = EnchainteClient(api_key)
+messages = [Message.fromString('Example Data 1')]
 
 try:
-	client.write('Example Data', 
-        'str',
-        lambda: pass,
-        lambda e: print('an error was found: '+ str(e)))
+	client.sendMessages(messages)
 except BaseException:
 	raise
 

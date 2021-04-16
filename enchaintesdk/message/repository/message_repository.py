@@ -1,6 +1,6 @@
 from enchaintesdk.config.service.config_service import ConfigService
 from enchaintesdk.infrastructure.http.http_client import HttpClient
-from ..entity.dto.message_retrieve_response_entity import MessageRetrieveResponse
+from ..entity.message_receipt_entity import MessageReceipt
 from ..entity.dto.message_write_response_entity import MessageWriteResponse
 from ..entity.message_entity import Message
 
@@ -14,9 +14,15 @@ class MessageRepository:
     def sendMessages(self, messages: [Message]) -> MessageWriteResponse:
         url = "{}/messages".format(self.__config_service.getApiBaseUrl())
         body = {'messages': [m.getHash() for m in messages]}
-        return self.__http_client.post(url, body)
+        response = self.__http_client.post(url, body)
+        return MessageWriteResponse(response.data)
 
-    def fetchMessages(self, messages: [Message]) -> [MessageRetrieveResponse]:
+    def fetchMessages(self, messages: [Message]) -> [MessageReceipt]:
         url = "{}/messages/fetch".format(self.__config_service.getApiBaseUrl())
         body = {'messages': [m.getHash() for m in messages]}
-        return self.__http_client.post(url, body)
+        response = self.__http_client.post(url, body)
+        return [MessageReceipt(
+            m.get('anchor', 0),
+            m.get('client', ''),
+            m.get('message', ''),
+            m.get('status', '')) for m in response.data]

@@ -21,7 +21,7 @@ def getSDK():
 
 class testE2EEnchainteClient(TestCase):
 
-    def test_E2E_okay(self):
+    def test_basic_e2e(self):
         sdk = getSDK()
         messages = [Message.fromBytes(randHex(64))]
         send_receipt = sdk.sendMessages(messages)

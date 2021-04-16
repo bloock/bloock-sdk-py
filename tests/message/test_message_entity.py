@@ -12,20 +12,20 @@ class MessageTestCase(TestCase):
 
     def test_from_hex(self):
         s = '10101010101010101010101010101010101010101010101010101010101010101111111111111111111111111111111111111111111111111111111111111111'
-        p = 'd8a0e356c183fccc77faa797f273905ade2baab574a98af314ff7acf7bf4d329'
+        p = 'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994a5'
         self.assertEqual(Message.fromHex(s)._Message__hash,
                          p, "Messages do not match.")
 
     def test_from_string(self):
-        s = 'testing blake'
+        s = 'testing keccak'
         self.assertEqual(Message.fromString(s)._Message__hash,
-                         'bbe426afe3fae78c3d3e25502a3e197762ada886da94c1b8104a1984c8c4d886',
+                         '7e5e383e8e70e55cdccfccf40dfc5d4bed935613dffc806b16b4675b555be139',
                          'Hashes do not match')
 
     def test_from_bytes(self):
         b = bytes.fromhex(
             '10101010101010101010101010101010101010101010101010101010101010101111111111111111111111111111111111111111111111111111111111111111')
-        p = 'd8a0e356c183fccc77faa797f273905ade2baab574a98af314ff7acf7bf4d329'
+        p = 'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994a5'
         self.assertEqual(Message.fromBytes(b)._Message__hash,
                          p,
                          'Hashes do not match')
@@ -36,14 +36,8 @@ class MessageTestCase(TestCase):
                         17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
                         17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17], dtype=np.uint8)
         self.assertEqual(Message.fromUint8Array(ar)._Message__hash,
-                         'd8a0e356c183fccc77faa797f273905ade2baab574a98af314ff7acf7bf4d329',
+                         'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994a5',
                          'Hashes do not match')
-
-    def test_sort(self):
-        arr = [Message('A0B0C0'), Message('FFFFFF'), Message('000201')]
-        self.assertEquals([x._Message__hash for x in Message.sort(arr)],
-                          ['000201', 'A0B0C0', 'FFFFFF'],
-                          'arrays do not match')
 
     def test_is_valid_okay(self):
         self.assertTrue(Message.isValid(Message(
@@ -60,10 +54,3 @@ class MessageTestCase(TestCase):
     def test_is_valid_not_message_instance(self):
         self.assertFalse(Message.isValid('test Message'),
                          'Message is not valid')
-
-    '''def test_merge(self):
-        m1 = '1010101010101010101010101010101010101010101010101010101010101010'
-        m2 = '1111111111111111111111111111111111111111111111111111111111111111'
-        p = 'd8a0e356c183fccc77faa797f273905ade2baab574a98af314ff7acf7bf4d329'
-        self.assertEqual(Message.merge(
-            Message(m1), Message(m2)), p, "Merge does not match")'''

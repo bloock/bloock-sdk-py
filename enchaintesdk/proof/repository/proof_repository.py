@@ -5,7 +5,7 @@ from enchaintesdk.message.entity.message_entity import Message
 from enchaintesdk.shared.utils import Utils
 from ..entity.dto.proof_retrieve_request_entity import ProofRetrieveRequest
 from ..entity.proof_entity import Proof
-from ..entity.exception.empty_proof_stack_exception import EmptyProofStackException
+from ..entity.exception.proof_verification_exception import ProofVerificationException
 
 
 class ProofRepository:
@@ -22,15 +22,37 @@ class ProofRepository:
         return Proof(response.data['leaves'], response.data['nodes'], response.data['depth'], response.data['bitmap'])
 
     def verifyProof(self, proof: Proof) -> Message:
-        '''leaves = [Message.fromHash(l).getHash()
-                  for l in proof.leaves]
-        hashes = [Utils.hexToBytes(n) for n in proof.nodes]'''
+
         leaves = proof.leaves
+        for l in leaves:
+            if not Utils.isHex(l) or len(l) != 64:
+                raise ProofVerificationException(
+                    'Proof leaves does contain the following value: "'+l +
+                    'which is not a valid Message.')
         hashes = proof.nodes
+        for h in hashes:
+            if not Utils.isHex(h) or len(h) != 64:
+                raise ProofVerificationException(
+                    'Proof hashes does contain the following value: "'+h +
+                    '"; which is not a valid Message.')
+        n_elements = len(leaves)+len(hashes)
+
+        if len(proof.depth) != (n_elements)*4:
+            raise ProofVerificationException(
+                'Proof depth does contain "'+str(len(proof.depth)) +
+                ' elements, but were expected'+str(n_elements*4) +
+                '. Depth values: '+proof.depth)
         depth_bytes = bytes.fromhex(proof.depth)
         depth = []
         for i in range(0, len(depth_bytes)//2):
             depth.append(int.from_bytes(depth_bytes[i*2:i*2+2], "big"))
+
+        if len(proof.bitmap) < ((n_elements + n_elements % 8)//8):
+            raise ProofVerificationException(
+                'Proof bitmap requires at least ' +
+                str(((n_elements + n_elements % 8)//8)) +
+                ', but only contains ' + str(len(proof.bitmap)) +
+                '. Proof bitmap value in hex: ' + proof.bitmap)
         bitmap = Utils.hexToUint8Array(proof.bitmap)
 
         it_leaves = 0
@@ -49,8 +71,6 @@ class ProofRepository:
 
             while len(stack) > 0 and stack[len(stack)-1][1] == act_depth:
                 last_hash = stack.pop()
-                if not last_hash:
-                    raise EmptyProofStackException()
                 act_hash = (Message.fromHex(last_hash[0] + act_hash).getHash())
                 act_depth -= 1
 

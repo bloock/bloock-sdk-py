@@ -11,7 +11,7 @@ class Message:
         self.__hash = hash
 
     @staticmethod
-    def from_(data):
+    def fromDict(data: dict):
         '''Returns message'''
         return Message.fromString(Utils.stringify(data))
 
@@ -43,12 +43,6 @@ class Message:
         return Message(Message.__hashAlgorithm.generateHash(uint8Array.tobytes()))
 
     @staticmethod
-    def sort(messages):
-        '''Input: [Messages]. Returns message'''
-        messages.sort(key=lambda x: x.getHash().upper())
-        return messages
-
-    @staticmethod
     def isValid(message) -> bool:
         if isinstance(message, Message):
             _message = message.getHash()
@@ -59,11 +53,3 @@ class Message:
 
     def getHash(self) -> str:
         return self.__hash
-
-    def getUint8ArrayHash(self) -> [np.uint8]:
-        return Utils.hexToUint8Array(self.__hash)
-
-    '''@staticmethod
-    def merge(left: [np.uint8], right: [np.uint8]) -> [np.uint8]:
-        return Message.fromUint8Array(np.concatenate([left, right])).getUint8ArrayHash()
-    '''

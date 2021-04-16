@@ -27,7 +27,7 @@ class EnchainteClient:
             * Get messages details
     '''
 
-    def __init__(self, api_key: str, environment: ConfigEnv = ConfigEnv.TEST):
+    def __init__(self, api_key: str, environment: ConfigEnv = ConfigEnv.TEST, timeout: int = 120000):
         ''' Constructor with API Key that enables accessing to Enchainté's functionalities
 
             Parameters
@@ -37,7 +37,6 @@ class EnchainteClient:
             environment: ConfigEnv (optional)
                 defines the Enchainté's environment to use. By default: production
         '''
-
         config_repo = ConfigRepository(ConfigData())
         self.__config_service = ConfigService(config_repo)
         self.__config_service.setupEnvironment(environment)
@@ -47,7 +46,7 @@ class EnchainteClient:
         anchor_repo = AnchorRepository(
             self.__http_client, self.__config_service)
         self.__anchor_service = AnchorService(
-            anchor_repo, self.__config_service)
+            anchor_repo, self.__config_service, timeout)
 
         message_repo = MessageRepository(
             self.__http_client, self.__config_service)

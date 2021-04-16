@@ -1,12 +1,176 @@
 import numpy as np
 from enchaintesdk.shared.utils import Utils
-from enchaintesdk.infrastructure.hashing.blake2b import Blake2b
 from unittest import TestCase, mock
 from enchaintesdk.proof.repository.proof_repository import ProofRepository
 from enchaintesdk.proof.entity.proof_entity import Proof
+from enchaintesdk.infrastructure.http.dto.api_response_entity import ApiResponse
+from enchaintesdk.message.entity.message_entity import Message
+from enchaintesdk.proof.entity.exception.proof_verification_exception import ProofVerificationException
 
 
 class testProofRepository(TestCase):
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_retrieve_proof_okay(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        MockHttpClient.post.return_value = ApiResponse({
+            "data": {
+                "bitmap": "bfdf7000",
+                "depth": "000400060006000500030002000400060007000800090009",
+                "leaves": [
+                    "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5",
+                ],
+                "nodes": [
+                    "bb6986853646d083929d1d92638f3d4741a3b7149bd2b63c6bfedd32e3c684d3",
+                    "0616067c793ac533815ae2d48d785d339e0330ce5bb5345b5e6217dd9d1dbeab",
+                    "68b8f6b25cc700e64ed3e3d33f2f246e24801f93d29786589fbbab3b11f5bcee"
+                ],
+                "root": "c6372dab6a48637173a457e3ae0c54a500bb50346e847eccf2b818ade94d8ccf"
+            },
+            "success": True
+        })
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = proof_repo.retrieveProof([Message(
+            "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5")])
+        self.assertIsInstance(proof, Proof)
+        self.assertEqual(proof.bitmap, 'bfdf7000',
+                         'Expecting different bitmap.')
+        self.assertEqual(
+            proof.depth, '000400060006000500030002000400060007000800090009', 'Expecting different depth')
+        self.assertEqual(proof.leaves, [
+                         '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'], 'Expecting different leaves array')
+        self.assertEqual(proof.nodes, [
+            "bb6986853646d083929d1d92638f3d4741a3b7149bd2b63c6bfedd32e3c684d3",
+            "0616067c793ac533815ae2d48d785d339e0330ce5bb5345b5e6217dd9d1dbeab",
+            "68b8f6b25cc700e64ed3e3d33f2f246e24801f93d29786589fbbab3b11f5bcee"
+        ], 'Expecting different nodes array')
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_keccak(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            '1111111111111111111111111111111111111111111111111111111111111111'
+        ]
+        depth = '00010001'
+        bitmap = '40'
+        root = '8e4b8e18156a1c7271055ce5b7ef53bb370294ebd631a3b95418a92da46e681f'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
+                         'Proof not verifying correctly.')
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_keccak_2(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            '0101010101010101010101010101010101010101010101010101010101010101'
+        ]
+        depth = '00000000'
+        bitmap = '40'
+        root = 'd5f4f7e1d989848480236fb0a5f808d5877abf778364ae50845234dd6c1e80fc'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
+                         'Proof not verifying correctly.')
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_keccak_3(self, MockHttpClient, MockBlockchainClient, MockConfig):
+
+        leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            'f49d70da1c2c8989766908e06b8d2277a6954ec8533696b9a404b631b0b7735a'
+        ]
+        depth = '00010001'
+        bitmap = '4000'
+        root = '5c67902dc31624d9278c286ef4ce469451d8f1d04c1edb29a5941ca0e03ddc8d'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
+                         'Proof not verifying correctly.')
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_failing_invalid_leaf(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        leaves = [
+            '000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            '0101010101010101010101010101010101010101010101010101010101010101'
+        ]
+        depth = '00000000'
+        bitmap = '40'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        with self.assertRaises(ProofVerificationException):
+            proof_repo.verifyProof(proof)
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_failing_invalid_node(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            '010101010101010101010101010101010101010101010101010101010101010'
+        ]
+        depth = '00000000'
+        bitmap = '40'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        with self.assertRaises(ProofVerificationException):
+            proof_repo.verifyProof(proof)
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_failing_invalid_depth(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            '0101010101010101010101010101010101010101010101010101010101010101'
+        ]
+        depth = '0000000'
+        bitmap = '40'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        with self.assertRaises(ProofVerificationException):
+            proof_repo.verifyProof(proof)
+
+    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
+    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    def test_verify_proof_failing_invalid_bitmap(self, MockHttpClient, MockBlockchainClient, MockConfig):
+        leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000']
+        nodes = [
+            '0101010101010101010101010101010101010101010101010101010101010101'
+        ]
+        depth = '000000000'
+        bitmap = '4'
+        proof_repo = ProofRepository(
+            MockHttpClient, MockBlockchainClient, MockConfig)
+        proof = Proof(leaves, nodes, depth, bitmap)
+        with self.assertRaises(ProofVerificationException):
+            proof_repo.verifyProof(proof)
+
+    ''' #TESTS IN BLAKE2B
 
     @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
     @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
@@ -80,61 +244,6 @@ class testProofRepository(TestCase):
         depth = '0000'
         bitmap = '00'
         root = '72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'
-        proof_repo = ProofRepository(
-            MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
-        self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
-                         'Proof not verifying correctly.')
-
-    '''@mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
-    def test_verify_proof_keccak(self, MockHttpClient, MockBlockchainClient, MockConfig):
-        leaves = [
-            '0000000000000000000000000000000000000000000000000000000000000000']
-        nodes = [
-            '1111111111111111111111111111111111111111111111111111111111111111'
-        ]
-        depth = '0000'
-        bitmap = '40'
-        root = '8e4b8e18156a1c7271055ce5b7ef53bb370294ebd631a3b95418a92da46e681f'
-        proof_repo = ProofRepository(
-            MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
-        self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
-                         'Proof not verifying correctly.')
-
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
-    def test_verify_proof_keccak_2(self, MockHttpClient, MockBlockchainClient, MockConfig):
-        leaves = [
-            '0000000000000000000000000000000000000000000000000000000000000000']
-        nodes = [
-            '0101010101010101010101010101010101010101010101010101010101010101'
-        ]
-        depth = '0000'
-        bitmap = '40'
-        root = 'd5f4f7e1d989848480236fb0a5f808d5877abf778364ae50845234dd6c1e80fc'
-        proof_repo = ProofRepository(
-            MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
-        self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
-                         'Proof not verifying correctly.')
-
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
-    def test_verify_proof_keccak_3(self, MockHttpClient, MockBlockchainClient, MockConfig):
-
-        leaves = [
-            '0000000000000000000000000000000000000000000000000000000000000000']
-        nodes = [
-            'f49d70da1c2c8989766908e06b8d2277a6954ec8533696b9a404b631b0b7735a'
-        ]
-        depth = '00010100'
-        bitmap = '4000'
-        root = '5c67902dc31624d9278c286ef4ce469451d8f1d04c1edb29a5941ca0e03ddc8d'
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
         proof = Proof(leaves, nodes, depth, bitmap)

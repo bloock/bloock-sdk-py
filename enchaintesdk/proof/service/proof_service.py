@@ -9,17 +9,11 @@ class ProofService:
         self.__proof_repository = proof_repo
 
     def retrieveProof(self, messages: [Message]) -> Proof:
-        s = Message.sort(messages)
-        return self.__proof_repository.retrieveProof(s)
+        return self.__proof_repository.retrieveProof(messages)
 
     def verifyMessages(self, messages: [Message]) -> int:
-        proof = self.retrieveProof(messages)
-        if proof == None:
-            raise Exception("Couldn't get proof for specified messages")
-        return self.verifyProof(proof)
+        return self.verifyProof(self.retrieveProof(messages))
 
     def verifyProof(self, proof: Proof) -> int:
         root = self.__proof_repository.verifyProof(proof)
-        if root == None:
-            raise Exception("The provided proof is invalid")
         return self.__proof_repository.validateRoot(root)
