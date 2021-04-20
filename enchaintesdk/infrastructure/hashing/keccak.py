@@ -1,5 +1,4 @@
 from Crypto.Hash import keccak
-import numpy as np
 
 
 class Keccak:

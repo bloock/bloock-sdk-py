@@ -21,4 +21,10 @@ class MessageService:
         return [MessageReceipt(r.anchor, r.client, m, r.status) for m in r.message]
 
     def getMessages(self, messages: [Message]) -> [MessageReceipt]:
+        if (len(messages) == 0):
+            return []
+
+        for m in messages:
+            if not Message.isValid(m):
+                raise InvalidMessageException(m.getHash())
         return self.__message_repo.fetchMessages(messages)

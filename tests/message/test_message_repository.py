@@ -5,7 +5,6 @@ from enchaintesdk.message.entity.message_receipt_entity import MessageReceipt
 from enchaintesdk.message.entity.dto.message_write_response_entity import MessageWriteResponse
 from enchaintesdk.message.repository.message_repository import MessageRepository
 from enchaintesdk.infrastructure.http.dto.api_response_entity import ApiResponse
-import numpy as np
 
 
 class MessageRepositoryTestCase(TestCase):
@@ -82,4 +81,4 @@ class MessageRepositoryTestCase(TestCase):
         self.assertEqual(
             r[0].client, '', 'Wrong client')
         self.assertEqual(r[0].message, '', 'Wrong messages')
-        self.assertEqual(r[0].status, '', 'Wrong anchor')
+        self.assertEqual(r[0].status, 'Pending', 'Wrong anchor')

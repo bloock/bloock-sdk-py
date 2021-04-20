@@ -48,7 +48,8 @@ class MessageServiceTestCase(TestCase):
                                                                      '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5',
                                                                      'Pending')]
         m_service = MessageService(MockMessageRepo)
-        r = m_service.getMessages([Message('')])
+        r = m_service.getMessages(
+            [Message('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')])
         self.assertEqual(r[0].anchor, 80, 'Wrong anchor')
         self.assertEqual(
             r[0].client, 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea', 'Wrong client')

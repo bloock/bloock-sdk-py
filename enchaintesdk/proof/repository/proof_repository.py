@@ -23,37 +23,15 @@ class ProofRepository:
 
     def verifyProof(self, proof: Proof) -> Message:
 
+        if not Proof.isValid(proof):
+            raise ProofVerificationException(
+                'Input Proof is not valid for a verification process.')
         leaves = proof.leaves
-        for l in leaves:
-            if not Utils.isHex(l) or len(l) != 64:
-                raise ProofVerificationException(
-                    'Proof leaves does contain the following value: "'+l +
-                    'which is not a valid Message.')
         hashes = proof.nodes
-        for h in hashes:
-            if not Utils.isHex(h) or len(h) != 64:
-                raise ProofVerificationException(
-                    'Proof hashes does contain the following value: "'+h +
-                    '"; which is not a valid Message.')
-        n_elements = len(leaves)+len(hashes)
-
-        if len(proof.depth) != (n_elements)*4:
-            raise ProofVerificationException(
-                'Proof depth does contain "'+str(len(proof.depth)) +
-                ' elements, but were expected'+str(n_elements*4) +
-                '. Depth values: '+proof.depth)
         depth_bytes = bytes.fromhex(proof.depth)
-        depth = []
-        for i in range(0, len(depth_bytes)//2):
-            depth.append(int.from_bytes(depth_bytes[i*2:i*2+2], "big"))
-
-        if len(proof.bitmap) < ((n_elements + n_elements % 8)//8):
-            raise ProofVerificationException(
-                'Proof bitmap requires at least ' +
-                str(((n_elements + n_elements % 8)//8)) +
-                ', but only contains ' + str(len(proof.bitmap)) +
-                '. Proof bitmap value in hex: ' + proof.bitmap)
-        bitmap = Utils.hexToUint8Array(proof.bitmap)
+        depth = [int.from_bytes(depth_bytes[i*2:i*2+2], 'big')
+                 for i in range(0, len(depth_bytes)//2)]
+        bitmap = [b for b in bytes.fromhex(proof.bitmap)]
 
         it_leaves = 0
         it_hashes = 0

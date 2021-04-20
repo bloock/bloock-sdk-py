@@ -27,15 +27,16 @@ class EnchainteClient:
             * Get messages details
     '''
 
-    def __init__(self, api_key: str, environment: ConfigEnv = ConfigEnv.TEST, timeout: int = 120000):
-        ''' Constructor with API Key that enables accessing to Enchainté's functionalities
+    def __init__(self, api_key: str, environment: ConfigEnv = ConfigEnv.TEST):
+        ''' Constructor with API Key that enables accessing to 
+            Enchainté's functionalities.
 
             Parameters
             ----------
             api_key : str
-                client API Key
+                Client API Key.
             environment: ConfigEnv (optional)
-                defines the Enchainté's environment to use. By default: production
+                Defines the Enchainté's environment to use. By default: production.
         '''
         config_repo = ConfigRepository(ConfigData())
         self.__config_service = ConfigService(config_repo)
@@ -46,7 +47,7 @@ class EnchainteClient:
         anchor_repo = AnchorRepository(
             self.__http_client, self.__config_service)
         self.__anchor_service = AnchorService(
-            anchor_repo, self.__config_service, timeout)
+            anchor_repo, self.__config_service)
 
         message_repo = MessageRepository(
             self.__http_client, self.__config_service)
@@ -57,92 +58,141 @@ class EnchainteClient:
         self.__proof_service = ProofService(proof_repo)
 
     def sendMessages(self, messages: [Message]) -> [MessageReceipt]:
-        ''' Sends a list of Message to Enchainté
+        ''' Sends a list of Message to Enchainté.
 
             Parameters
             ----------
             messages : [Message]
-                list of Message to send
+                List of Message to send.
 
             Returns
             -------
             [MessageReceipt]
-                list of MessageReceipt of each Message sent.
+                List of MessageReceipt of each Message sent.
+
+            Exceptions
+            ----------
+            InvalidMessageException
+                At least one of the messages sent was not well formed.
+            HttpRequestException
+                Error return by Enchainté's API.
         '''
         return self.__message_service.sendMessages(messages)
 
     def getMessages(self, messages: [Message]) -> [MessageReceipt]:
-        ''' Retrieves all MessageReceipt for the specified Anchor
+        ''' Retrieves all MessageReceipt for the specified Anchor.
 
             Parameters
             ----------
             messages : [Message]
-                list of Message to fetch
+                List of Message to fetch.
 
             Returns
             -------
             [MessageReceipt]
+                List with the MessageReceipt of each message requested.
+
+            Exceptions
+            ----------
+            InvalidMessageException
+                At least one of the messages sent was not well formed.
+            HttpRequestException
+                Error return by Enchainté's API.
         '''
         return self.__message_service.getMessages(messages)
 
     def getAnchor(self, anchor: int) -> Anchor:
-        ''' Gets an specific anchor id details
+        ''' Gets an specific anchor id details.
 
             Parameters
             ----------
             anchor : int
-                id of the Anchor to look for
+                Id of the Anchor to look for.
 
             Returns
             -------
             Anchor
-                Anchor object matching the id
+                Anchor object matching the id.
+
+            Exceptions
+            ----------
+            TypeError
+                Informs that the input is not an int.
+            HttpRequestException
+                Error return by Enchainté's API.
         '''
         return self.__anchor_service.getAnchor(anchor)
 
-    def waitAnchor(self, anchor: int) -> Anchor:
-        ''' Waits until the anchor specified is confirmed in Enchainté
+    def waitAnchor(self, anchor: int,  timeout: int = 120000) -> Anchor:
+        ''' Waits until the anchor specified is confirmed in Enchainté.
 
             Parameters
             ----------
             anchor : int
-                id of the Anchor to wait for
+                Id of the Anchor to wait for.
+            timeout (optional): int 
+                Timeout time in miliseconds. After exceeding this time 
+                returns a None.
 
             Returns
             -------
             Anchor
-                Anchor object matching the id
+                Anchor object matching the id.
+
+            Exceptions
+            ----------
+            TypeError
+                Informs that the input is not an int.
+            HttpRequestException
+                Error return by Enchainté's API.
         '''
-        return self.__anchor_service.waitAnchor(anchor)
+        return self.__anchor_service.waitAnchor(anchor, timeout)
 
     def getProof(self, messages: [Message]) -> Proof:
-        ''' Retrieves an integrity Proof for the specified list of Anchor
+        ''' Retrieves an integrity Proof for the specified list of Message.
 
             Parameters
             ----------
             messages: [Message]
-                list of messages to validate
+                List of messages to validate.
 
             Returns
             -------
-            Proof
+            Proof/None 
+                The Proof object containing the elements necessary to verify
+                the integrity of the messages in the input list. If no
+                message was requested, then returns None.
+
+            Exceptions
+            ----------
+            InvalidMessageException
+                At least one of the messages sent was not well formed.
+            HttpRequestException
+                Error return by Enchainté's API.
         '''
         return self.__proof_service.retrieveProof(messages)
 
-    # TODO: descorbir si realment és un int o no
     def verifyProof(self, proof: Proof) -> bool:
-        ''' Verifies if the specified integrity [Proof] is valid and checks if 
+        ''' Verifies if the specified integrity Proof is valid and checks if 
             it's currently included in the blockchain.
 
             Parameters
             ----------
             proof: Proof
-                Proof to validate
+                Proof to validate.
 
             Returns
             -------
             bool
-                a [Boolean] that returns True if valid, False if not
+                A Boolean that returns True if valid, False if not.
+
+            Exceptions
+            ----------
+            ProofVerificationException
+                Error informing that at least one of the parameters of the Proof
+                has not a valid value.
+            Web3Exception
+                Error connecting to blockchain.
         '''
         return self.__proof_service.verifyProof(proof)
 
@@ -159,5 +209,17 @@ class EnchainteClient:
             -------
             bool
                 a [Boolean] that returns True if valid, False if not
+
+            Exceptions
+            ----------
+            InvalidMessageException
+                At least one of the messages sent was not well formed.
+            HttpRequestException
+                Error return by Enchainté's API.
+            ProofVerificationException
+                Error informing that at least one of the parameters of the Proof
+                has not a valid value.
+            Web3Exception
+                Error connecting to blockchain.
         '''
         return self.__proof_service.verifyMessages(messages)

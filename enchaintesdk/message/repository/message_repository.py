@@ -25,4 +25,4 @@ class MessageRepository:
             m.get('anchor', 0),
             m.get('client', ''),
             m.get('message', ''),
-            m.get('status', '')) for m in response.data]
+            m.get('status', 'Pending')) for m in response.data]

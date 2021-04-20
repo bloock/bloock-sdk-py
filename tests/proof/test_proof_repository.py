@@ -1,6 +1,5 @@
-import numpy as np
-from enchaintesdk.shared.utils import Utils
 from unittest import TestCase, mock
+from enchaintesdk.shared.utils import Utils
 from enchaintesdk.proof.repository.proof_repository import ProofRepository
 from enchaintesdk.proof.entity.proof_entity import Proof
 from enchaintesdk.infrastructure.http.dto.api_response_entity import ApiResponse

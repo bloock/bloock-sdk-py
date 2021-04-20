@@ -1,10 +1,10 @@
 from enchaintesdk.shared.enchainte_client_exception import EnchainteSDKException
 
 
-class HttpRequestException(EnchainteSDKException):
+class Web3Exception(EnchainteSDKException):
     """ Attributes:
         -----------
-        message -- message retrieved from Http response
+        message -- message retrieved from Web3 response
     """
 
     def __init__(self, message):

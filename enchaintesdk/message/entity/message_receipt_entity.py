@@ -3,4 +3,4 @@ class MessageReceipt:
         self.anchor = anchor or 0
         self.client = client or ''
         self.message = message or ''
-        self.status = status or ''
+        self.status = status or 'Pending'

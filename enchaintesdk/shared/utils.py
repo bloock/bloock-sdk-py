@@ -1,4 +1,3 @@
-import numpy as np
 import json
 import string
 from time import sleep
@@ -10,20 +9,8 @@ class Utils:
         return json.dumps(data, sort_keys=True, separators=(',', ':'))
 
     @staticmethod
-    def stringToBytes(string: str) -> [np.uint8]:
-        return np.frombuffer(str.encode(string), dtype=np.uint8).tobytes()
-
-    @staticmethod
-    def hexToUint8Array(hex: str) -> [np.uint8]:
-        return np.frombuffer(bytes.fromhex(hex), dtype=np.uint8).tobytes()
-
-    @staticmethod
-    def bytesToString(array: [np.uint8]) -> str:
-        return ''.join([chr(e) for e in array])
-
-    @staticmethod
-    def bytesToHex(array: [np.uint8]) -> str:
-        return ''.join(['{:02x}'.format(e) for e in array])
+    def stringToBytes(string: str) -> bytes:
+        return bytes(string, 'utf-8')
 
     @staticmethod
     def isHex(h: str) -> bool:
