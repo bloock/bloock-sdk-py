@@ -44,7 +44,7 @@ Message.fromString('Example Data')
 Message.fromBytes(b'Example Data')
 
 # Retrieve the computed message
-Message.fromBytes(b'Example Data').getMessage()
+Message.fromBytes(b'Example Data').getHash()
 ```
 
 ### Send messages
@@ -52,17 +52,17 @@ Message.fromBytes(b'Example Data').getMessage()
 This example shows how to send data to Enchainté.
 
 ```python
-from enchaintesdk import EnchainteClient, Message
-from enchaintesdk.exceptions import EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
 import os
 
 api_key = os.getenv("ENCHAINTE_APIKEY", default='api_key')
 client = EnchainteClient(api_key)
+
 messages = [Message.fromString('Example Data 1')]
 
 try:
 	send_receipt = client.sendMessages(messages)
-    print('sendReceipt status: {}', send_receipt.status)
+    print('sendReceipt status: ', send_receipt[0].status)
 except EnchainteSDKException:
 	raise
 ```
@@ -72,12 +72,10 @@ except EnchainteSDKException:
 This example shows how to get all the details and status of messages:
 
 ```python
-from enchaintesdk import EnchainteClient, Message
-from enchaintesdk.exceptions import EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
 import os
 
 apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
-
 client = EnchainteClient(apiKey)
 
 messages = [
@@ -88,8 +86,9 @@ messages = [
 
 try:
 	m_receipts = client.getMessages(messages)
-    print("MessageReceipt: \{anchor_id: {}, client:{}, message:{}, status:{}\}".format(
-        m_receipts.anchor, m_receipts.client, m_receipts.message, m_receipts.status))
+    for mr in m_receipts:
+        print("MessageReceipt: {{anchor_id: {}, client:{}, message:{}, status:{}}}".format(
+            mr.anchor, mr.client, mr.message, mr.status))
 except EnchainteSDKException:
 	raise
 ```
@@ -100,8 +99,7 @@ except EnchainteSDKException:
 This example shows how to wait for a message to be processed by Enchainté after sending i:
 
 ```python
-from enchaintesdk import EnchainteClient, Message
-from enchaintesdk.exceptions import EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
 import os
 
 api_key = os.getenv("ENCHAINTE_APIKEY", default='api_key')
@@ -110,9 +108,9 @@ messages = [Message.fromString('Example Data 1')]
 
 try:
 	send_receipt = client.sendMessages(messages)
-    anchor = sdk.waitAnchor(send_receipt[0].anchor)
+    anchor = client.waitAnchor(send_receipt[0].anchor)
     print("Anchor: {{id: {}, blocks:{}, network:{}, root: {}, status:{}}}".format(
-        anchor.id, anchor.blocks, anchor.network, anchor.root, anchor.status))
+        anchor.id, anchor.block_roots, anchor.networks, anchor.root, anchor.status))
 except EnchainteSDKException:
 	raise
 ```
@@ -122,8 +120,7 @@ except EnchainteSDKException:
 This example shows how to get a proof for an array of messages and validate it:
 
 ```python
-from enchaintesdk import EnchainteClient, Message
-from enchaintesdk.exceptions import EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
 import os
 
 apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
@@ -138,9 +135,9 @@ messages = [
 
 try:
 	proof = client.getProof(messages)
-	is_valid_boolean = client.verifyProof(proof)
-    # or simply: is_valid_boolean = client.verifyMessages(messages)
-    print('Are our messages found in blockchain? : {}'.format(is_valid_boolean))
+	timestamp = client.verifyProof(proof)
+    # or simply: timestamp = client.verifyMessages(messages)
+    print('When were our messages sent to blockchain? : {}'.format(is_valid_boolean))
 except EnchainteSDKException:
 	raise
 ```
@@ -152,15 +149,15 @@ This snippet shows a complete data cycle including: write, message status pollin
 ```python
 #!/usr/bin/env python3
 
-from enchaintesdk import EnchainteClient, Message
-from enchaintesdk.exceptions import EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
 import random
 import time
 import os
 
+
 def randHex(l):
     ''' Helper function to generate a random message.'''
-    val = [int(random.uniform(0, 256)) for x in range(0,l)]
+    val = [int(random.uniform(0, 256)) for x in range(0, l)]
     result = ''
     for n in val:
         result += ('%x' % n)
@@ -168,25 +165,26 @@ def randHex(l):
 
 
 def main():
-    apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
+    apiKey = os.getenv("API_KEY", default='apiKey')
 
     client = EnchainteClient(apiKey)
 
-    h = Message.fromString(randHex(64))
     try:
         messages = [Message.fromString(randHex(64))]
         send_receipt = client.sendMessages(messages)
-
+        print('Message sent to Enchainté. Waiting for anchor to be processed ...')
         client.waitAnchor(send_receipt[0].anchor)
 
+        print('Anchor retrieved. Getting Message proof ...')
         proof = client.getProof(messages)
-        
+
+        print('Verifying proof ...')
         timestamp = client.verifyProof(proof)
-        
+
         if timestamp <= 0:
-            print('Data not registered on blockchain.')
-        
-        print('Finished!')
+            print('Data not registered on the blockchain.')
+
+        print('Success!')
 
     except EnchainteSDKException as e:
         print(e)
