@@ -2,7 +2,7 @@ from enchaintesdk.anchor.service.anchor_service import AnchorService
 from enchaintesdk.anchor.entity.anchor_entity import Anchor
 from enchaintesdk.anchor.entity.anchor_entity import Anchor
 from enchaintesdk.config.entity.configuration_entity import Configuration
-from enchaintesdk.infrastructure.http.exception.http_exception import HttpRequestException
+from enchaintesdk.infrastructure.http.http_exception import HttpRequestException
 from unittest import TestCase, mock
 import time
 

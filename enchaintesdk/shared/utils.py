@@ -6,7 +6,7 @@ from time import sleep
 class Utils:
     @staticmethod
     def stringify(data: dict) -> str:
-        return json.dumps(data, sort_keys=True, separators=(',', ':'))
+        return json.dumps(data, sort_keys=True, separators=(',', ':'), default=str)
 
     @staticmethod
     def stringToBytes(string: str) -> bytes:

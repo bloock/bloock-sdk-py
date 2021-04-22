@@ -4,11 +4,12 @@ from enchaintesdk.enchainte_client import EnchainteClient
 from enchaintesdk.message.entity.message_entity import Message
 from enchaintesdk.anchor.entity.anchor_entity import Anchor
 from enchaintesdk.proof.entity.proof_entity import Proof
+from enchaintesdk.config.entity.config_env_entity import ConfigEnv
 
 
 def getSDK():
     api_key = os.environ['API_KEY']
-    return EnchainteClient(api_key)
+    return EnchainteClient(api_key, ConfigEnv.TEST)
 
 
 class testFunctionalSendMessage(TestCase):

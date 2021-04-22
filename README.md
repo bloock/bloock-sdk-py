@@ -11,7 +11,7 @@ This SDK offers all the features available in the Enchainté Toolset:
 The SDK can be installed with PIP as follows:
 
 ```shell
-$ pip install --index-url https://test.pypi.org/simple/ enchaintesdk --extra-index-url https://pypi.org/simple/
+$ pip install enchaintesdk
 ```
 
 ## Usage
@@ -52,11 +52,11 @@ Message.fromBytes(b'Example Data').getHash()
 This example shows how to send data to Enchainté.
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
 import os
 
 api_key = os.getenv("ENCHAINTE_APIKEY", default='api_key')
-client = EnchainteClient(api_key)
+client = EnchainteClient(api_key, environment=ConfigEnv.TEST)
 
 messages = [Message.fromString('Example Data 1')]
 
@@ -72,11 +72,11 @@ except EnchainteSDKException:
 This example shows how to get all the details and status of messages:
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
 import os
 
 apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
-client = EnchainteClient(apiKey)
+client = EnchainteClient(apiKey, environment=ConfigEnv.TEST)
 
 messages = [
     Message.fromString('Example Data 1'),
@@ -99,11 +99,11 @@ except EnchainteSDKException:
 This example shows how to wait for a message to be processed by Enchainté after sending i:
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
 import os
 
 api_key = os.getenv("ENCHAINTE_APIKEY", default='api_key')
-client = EnchainteClient(api_key)
+client = EnchainteClient(api_key, environment=ConfigEnv.TEST)
 messages = [Message.fromString('Example Data 1')]
 
 try:
@@ -120,12 +120,12 @@ except EnchainteSDKException:
 This example shows how to get a proof for an array of messages and validate it:
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
+from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
 import os
 
 apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
 
-client = EnchainteClient(apiKey)
+client = EnchainteClient(apiKey, environment=ConfigEnv.TEST)
 
 messages = [
     Message.fromString('Example Data 1'),

@@ -2,7 +2,7 @@ from enchaintesdk.config.service.config_service import ConfigService
 from enchaintesdk.shared.utils import Utils
 from ..entity.anchor_entity import Anchor
 from ..repository.anchor_repository import AnchorRepository
-from enchaintesdk.infrastructure.http.exception.http_exception import HttpRequestException
+from enchaintesdk.infrastructure.http.http_exception import HttpRequestException
 import time
 
 

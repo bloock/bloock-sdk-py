@@ -2,7 +2,7 @@ import json
 from web3 import Web3
 from requests.exceptions import RequestException
 from enchaintesdk.config.service.config_service import ConfigService
-from .exception.web3_exception import Web3Exception
+from .web3_exception import Web3Exception
 
 
 class Web3Client:

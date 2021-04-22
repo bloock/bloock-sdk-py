@@ -27,7 +27,7 @@ class EnchainteClient:
             * Get messages details
     '''
 
-    def __init__(self, api_key: str, environment: ConfigEnv = ConfigEnv.TEST):
+    def __init__(self, api_key: str, environment: ConfigEnv = ConfigEnv.PROD):
         ''' Constructor with API Key that enables accessing to 
             Enchainté's functionalities.
 

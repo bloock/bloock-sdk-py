@@ -1,4 +1,7 @@
-class InvalidMessageException(Exception):
+from enchaintesdk.shared.enchainte_client_exception import EnchainteSDKException
+
+
+class InvalidMessageException(EnchainteSDKException):
     """ Attributes:
         -----------
         hash -- message hash

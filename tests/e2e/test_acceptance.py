@@ -1,7 +1,7 @@
 import os
 import binascii
 from unittest import TestCase
-from enchaintesdk.infrastructure.http.exception.http_exception import HttpRequestException
+from enchaintesdk.infrastructure.http.http_exception import HttpRequestException
 from enchaintesdk.infrastructure.http.http_data import HttpData
 from enchaintesdk.infrastructure.http.http_client import HttpClient
 from enchaintesdk.enchainte_client import EnchainteClient
@@ -9,6 +9,7 @@ from enchaintesdk.message.entity.message_entity import Message
 from enchaintesdk.anchor.entity.anchor_entity import Anchor
 from enchaintesdk.proof.entity.proof_entity import Proof
 from enchaintesdk.exceptions import InvalidMessageException
+from enchaintesdk.config.entity.config_env_entity import ConfigEnv
 
 
 def randHex(len: int) -> bytes:
@@ -17,7 +18,7 @@ def randHex(len: int) -> bytes:
 
 def getSDK():
     api_key = os.environ['API_KEY']
-    return EnchainteClient(api_key)
+    return EnchainteClient(api_key, ConfigEnv.TEST)
 
 
 class testE2EEnchainteClient(TestCase):

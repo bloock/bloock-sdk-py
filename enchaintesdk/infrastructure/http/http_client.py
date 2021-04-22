@@ -1,8 +1,8 @@
+from requests.exceptions import RequestException
 import requests
 from .http_data import HttpData
 from .dto.api_response_entity import ApiResponse
-from .exception.http_exception import HttpRequestException
-from requests.exceptions import RequestException
+from .http_exception import HttpRequestException
 
 
 class HttpClient:
@@ -30,7 +30,7 @@ class HttpClient:
         ''' Wrapper for request library. Can raise HttpRequestException. '''
         try:
             new_headers = dict(
-                {"Authorization": 'Bearer ' + self.__http_data.api_key}, **headers)
+                {"Authorization": self.__http_data.api_key}, **headers)
             response = requests.post(url=url, json=body, headers=new_headers)
             response_json = response.json()
             if response.ok:
