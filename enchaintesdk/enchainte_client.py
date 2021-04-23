@@ -172,7 +172,7 @@ class EnchainteClient:
         '''
         return self.__proof_service.retrieveProof(messages)
 
-    def verifyProof(self, proof: Proof) -> bool:
+    def verifyProof(self, proof: Proof) -> int:
         ''' Verifies if the specified integrity Proof is valid and checks if 
             it's currently included in the blockchain.
 
@@ -183,8 +183,9 @@ class EnchainteClient:
 
             Returns
             -------
-            bool
-                A Boolean that returns True if valid, False if not.
+            int
+                A int contining the timestamp from when the messages where sent to blockchain.
+                Its value is 0 not found.
 
             Exceptions
             ----------
@@ -196,7 +197,7 @@ class EnchainteClient:
         '''
         return self.__proof_service.verifyProof(proof)
 
-    def verifyMessages(self, messages: [Message]) -> bool:
+    def verifyMessages(self, messages: [Message]) -> int:
         ''' It retrieves a proof for the specified list of Anchor using getProof and
             verifies it using verifyProof.
 
@@ -207,8 +208,9 @@ class EnchainteClient:
 
             Returns
             -------
-            bool
-                a [Boolean] that returns True if valid, False if not
+            int
+                A int contining the timestamp from when the messages where sent to blockchain.
+                Its value is 0 not found.
 
             Exceptions
             ----------
