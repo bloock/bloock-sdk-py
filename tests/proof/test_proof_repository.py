@@ -13,8 +13,7 @@ class testProofRepository(TestCase):
     @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
     @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
     def test_retrieve_proof_okay(self, MockHttpClient, MockBlockchainClient, MockConfig):
-        MockHttpClient.post.return_value = ApiResponse({
-            "data": {
+        MockHttpClient.post.return_value = {
                 "bitmap": "bfdf7000",
                 "depth": "000400060006000500030002000400060007000800090009",
                 "leaves": [
@@ -26,9 +25,7 @@ class testProofRepository(TestCase):
                     "68b8f6b25cc700e64ed3e3d33f2f246e24801f93d29786589fbbab3b11f5bcee"
                 ],
                 "root": "c6372dab6a48637173a457e3ae0c54a500bb50346e847eccf2b818ade94d8ccf"
-            },
-            "success": True
-        })
+            }
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
         proof = proof_repo.retrieveProof([Message(

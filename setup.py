@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="enchaintesdk",
-    version="0.1.2",
+    version="0.1.3",
     author="Albert Canyelles Ruiz",
     author_email="acanyelles@enchainte.com",
     description="Enchainté SDK for Python3",

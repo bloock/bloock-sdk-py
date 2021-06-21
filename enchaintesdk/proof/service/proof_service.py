@@ -1,3 +1,4 @@
+from typing import List
 from enchaintesdk.message.entity.message_entity import Message
 from ..entity.proof_entity import Proof
 from ..repository.proof_repository import ProofRepository
@@ -9,7 +10,7 @@ class ProofService:
     def __init__(self, proof_repo: ProofRepository):
         self.__proof_repository = proof_repo
 
-    def retrieveProof(self, messages: [Message]) -> Proof:
+    def retrieveProof(self, messages: List[Message]) -> Proof:
         if not messages:
             return None
         for m in messages:
@@ -17,7 +18,7 @@ class ProofService:
                 raise InvalidMessageException(m.getHash())
         return self.__proof_repository.retrieveProof(messages)
 
-    def verifyMessages(self, messages: [Message]) -> int:
+    def verifyMessages(self, messages: List[Message]) -> int:
         return self.verifyProof(self.retrieveProof(messages))
 
     def verifyProof(self, proof: Proof) -> int:

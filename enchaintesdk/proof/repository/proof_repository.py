@@ -1,3 +1,4 @@
+from typing import List
 from enchaintesdk.config.service.config_service import ConfigService
 from enchaintesdk.infrastructure.blockchain.web3 import Web3Client
 from enchaintesdk.infrastructure.http.http_client import HttpClient
@@ -15,11 +16,11 @@ class ProofRepository:
         self.__blockchain_client = blockchain_client
         self.__config_service = config_service
 
-    def retrieveProof(self, messages: [Message]) -> Proof:
-        url = f'{self.__config_service.getApiBaseUrl()}/messages/proof'
+    def retrieveProof(self, messages: List[Message]) -> Proof:
+        url = f'{self.__config_service.getApiBaseUrl()}/core/proof'
         body = {'messages': [m.getHash() for m in messages]}
         response = self.__http_client.post(url, body)
-        return Proof(response.data['leaves'], response.data['nodes'], response.data['depth'], response.data['bitmap'])
+        return Proof(response['leaves'], response['nodes'], response['depth'], response['bitmap'])
 
     def verifyProof(self, proof: Proof) -> Message:
 

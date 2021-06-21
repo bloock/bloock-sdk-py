@@ -10,13 +10,13 @@ class testAnchorRepository(TestCase):
     @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
     def test_get_anchor_okay(self, MockHttpClient, MockConfig):
         MockConfig.getApiBaseUrl.returning("i'm definitely a URL")
-        MockHttpClient.get.return_value = ApiResponse({'success': True, 'data': {
+        MockHttpClient.get.return_value = {
             'anchor_id': 1,
             'block_roots': ['block_root'],
             'networks': [],
             'root': 'root',
             'status': 'Success'
-        }})
+        }
         anchor_repo = AnchorRepository(MockHttpClient, MockConfig)
         anchor = anchor_repo.getAnchor(1)
         self.assertIsInstance(anchor, Anchor,

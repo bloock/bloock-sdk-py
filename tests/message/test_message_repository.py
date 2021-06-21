@@ -12,12 +12,11 @@ class MessageRepositoryTestCase(TestCase):
     @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
     @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
     def test_send_messages_okay(self, MockHttpClient, MockConfigService):
-        MockHttpClient.post.return_value = ApiResponse({'data': {
+        MockHttpClient.post.return_value = {
             'anchor': 80,
             'client': 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
             'messages': ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'],
-            'status': 'Pending'},
-            'success': True})
+            'status': 'Pending'}
         MockConfigService.getApiBaseUrl.return_value = "api url"
         m_repo = MessageRepository(MockHttpClient, MockConfigService)
         r = m_repo.sendMessages([])
@@ -32,8 +31,7 @@ class MessageRepositoryTestCase(TestCase):
     @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
     @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
     def test_send_messages_okay_but_empty_fields(self, MockHttpClient, MockConfigService):
-        MockHttpClient.post.return_value = ApiResponse({'data': {},
-                                                        'success': True})
+        MockHttpClient.post.return_value = {}
         MockConfigService.getApiBaseUrl.return_value = "api url"
         m_repo = MessageRepository(MockHttpClient, MockConfigService)
         r = m_repo.sendMessages([])
@@ -47,12 +45,11 @@ class MessageRepositoryTestCase(TestCase):
     @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
     @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
     def test_fetch_messages_okay(self, MockHttpClient, MockConfigService):
-        MockHttpClient.post.return_value = ApiResponse({'data': [{
+        MockHttpClient.post.return_value = [{
             'anchor': 80,
             'client': 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
             'message': ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'],
-            'status': 'Pending'}],
-            'success': True})
+            'status': 'Pending'}]
         MockConfigService.getApiBaseUrl.return_value = "api url"
         m_repo = MessageRepository(MockHttpClient, MockConfigService)
         r = m_repo.fetchMessages([])
@@ -67,12 +64,11 @@ class MessageRepositoryTestCase(TestCase):
     @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
     @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
     def test_fetch_messages_okay_but_empty_fields(self, MockHttpClient, MockConfigService):
-        MockHttpClient.post.return_value = ApiResponse({'data': [{
+        MockHttpClient.post.return_value = [{
             'anchor': None,
             'client': None,
             'message': None,
-            'status': None}],
-            'success': True})
+            'status': None}]
         MockConfigService.getApiBaseUrl.return_value = "api url"
         m_repo = MessageRepository(MockHttpClient, MockConfigService)
         r = m_repo.fetchMessages([])

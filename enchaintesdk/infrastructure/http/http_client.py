@@ -17,12 +17,12 @@ class HttpClient:
         ''' Wrapper for request library. Can raise HttpRequestException. '''
         try:
             new_headers = dict(
-                {"Authorization": self.__http_data.api_key}, **headers)
+                {"X-API-KEY": self.__http_data.api_key}, **headers)
             response = requests.get(url=url, headers=new_headers)
             response_json = response.json()
             if response.ok:
-                return ApiResponse(response_json)
-            raise HttpRequestException(response_json['error']['message'])
+                return response_json
+            raise HttpRequestException(response_json['message'])
         except RequestException as e:
             raise HttpRequestException(str(e))
 
@@ -30,11 +30,11 @@ class HttpClient:
         ''' Wrapper for request library. Can raise HttpRequestException. '''
         try:
             new_headers = dict(
-                {"Authorization": self.__http_data.api_key}, **headers)
+                {"X-API-KEY": self.__http_data.api_key}, **headers)
             response = requests.post(url=url, json=body, headers=new_headers)
             response_json = response.json()
             if response.ok:
-                return ApiResponse(response_json)
-            raise HttpRequestException(response_json['error']['message'])
+                return response_json
+            raise HttpRequestException(response_json['message'])
         except RequestException as e:
             raise HttpRequestException(str(e))

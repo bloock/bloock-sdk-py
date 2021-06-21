@@ -1,3 +1,4 @@
+from typing import List
 from .anchor.entity.anchor_entity import Anchor
 from .anchor.repository.anchor_repository import AnchorRepository
 from .anchor.service.anchor_service import AnchorService
@@ -57,7 +58,7 @@ class EnchainteClient:
             self.__http_client, Web3Client(self.__config_service), self.__config_service)
         self.__proof_service = ProofService(proof_repo)
 
-    def sendMessages(self, messages: [Message]) -> [MessageReceipt]:
+    def sendMessages(self, messages: List[Message]) -> List[MessageReceipt]:
         ''' Sends a list of Message to Enchainté.
 
             Parameters
@@ -79,7 +80,7 @@ class EnchainteClient:
         '''
         return self.__message_service.sendMessages(messages)
 
-    def getMessages(self, messages: [Message]) -> [MessageReceipt]:
+    def getMessages(self, messages: List[Message]) -> List[MessageReceipt]:
         ''' Retrieves all MessageReceipt for the specified Anchor.
 
             Parameters
@@ -148,7 +149,7 @@ class EnchainteClient:
         '''
         return self.__anchor_service.waitAnchor(anchor, timeout)
 
-    def getProof(self, messages: [Message]) -> Proof:
+    def getProof(self, messages: List[Message]) -> Proof:
         ''' Retrieves an integrity Proof for the specified list of Message.
 
             Parameters
@@ -197,7 +198,7 @@ class EnchainteClient:
         '''
         return self.__proof_service.verifyProof(proof)
 
-    def verifyMessages(self, messages: [Message]) -> int:
+    def verifyMessages(self, messages: List[Message]) -> int:
         ''' It retrieves a proof for the specified list of Anchor using getProof and
             verifies it using verifyProof.
 

@@ -1,3 +1,4 @@
+from typing import List
 from ..entity.exception.invalid_message_exception import InvalidMessageException
 from ..entity.message_receipt_entity import MessageReceipt
 from ..entity.message_entity import Message
@@ -9,7 +10,7 @@ class MessageService:
     def __init__(self, message_repository: MessageRepository):
         self.__message_repo = message_repository
 
-    def sendMessages(self, messages: [Message]) -> [MessageReceipt]:
+    def sendMessages(self, messages: List[Message]) -> List[MessageReceipt]:
         if (len(messages) == 0):
             return []
 
@@ -20,7 +21,7 @@ class MessageService:
         r = self.__message_repo.sendMessages(messages)
         return [MessageReceipt(r.anchor, r.client, m, r.status) for m in r.message]
 
-    def getMessages(self, messages: [Message]) -> [MessageReceipt]:
+    def getMessages(self, messages: List[Message]) -> List[MessageReceipt]:
         if (len(messages) == 0):
             return []
 

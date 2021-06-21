@@ -11,11 +11,11 @@ class AnchorRepository:
         self.__config_service = config_service
 
     def getAnchor(self, anchor: int) -> Anchor:
-        url = f'{self.__config_service.getApiBaseUrl()}/anchors/{anchor}'
+        url = f'{self.__config_service.getApiBaseUrl()}/core/anchor/{anchor}'
         r = self.__http_client.get(url)
         return Anchor(
-            r.data['anchor_id'],
-            r.data['block_roots'],
-            r.data['networks'],
-            r.data['root'],
-            r.data['status'])
+            r['anchor_id'],
+            r['block_roots'],
+            r['networks'],
+            r['root'],
+            r['status'])

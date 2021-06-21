@@ -24,8 +24,7 @@ class ConfigServiceTestCase(TestCase):
         config = ConfigService(MockConfigRepo)
         ret = Configuration()
         ret.host = 'test'
-        ret.api_version = 'ing'
         MockConfigRepo.getConfiguration.return_value = ret
-        self.assertEqual(config.getApiBaseUrl(), 'testing',
+        self.assertEqual(config.getApiBaseUrl(), 'test',
                          'Expecting "testing", found something else.')
         MockConfigRepo.getConfiguration.assert_called_once()

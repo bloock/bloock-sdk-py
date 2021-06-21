@@ -24,4 +24,4 @@ class ConfigService:
     def getApiBaseUrl(self) -> str:
         ''' Returns a string containing the API'S base URL.'''
         conf = self.__config_repository.getConfiguration()
-        return "{}{}".format(conf.host, conf.api_version)
+        return conf.host
