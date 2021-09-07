@@ -1,6 +1,6 @@
 from unittest import TestCase, mock
-from enchaintesdk.shared.utils import Utils
-from enchaintesdk.proof.entity.proof_entity import Proof
+from bloock.shared.utils import Utils
+from bloock.proof.entity.proof_entity import Proof
 
 
 class testProofEntity(TestCase):

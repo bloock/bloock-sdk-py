@@ -1,13 +1,13 @@
-from enchaintesdk.anchor.repository.anchor_repository import AnchorRepository
-from enchaintesdk.anchor.entity.anchor_entity import Anchor
-from enchaintesdk.infrastructure.http.dto.api_response_entity import ApiResponse
+from bloock.anchor.repository.anchor_repository import AnchorRepository
+from bloock.anchor.entity.anchor_entity import Anchor
+from bloock.infrastructure.http.dto.api_response_entity import ApiResponse
 from unittest import TestCase, mock
 
 
 class testAnchorRepository(TestCase):
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_get_anchor_okay(self, MockHttpClient, MockConfig):
         MockConfig.getApiBaseUrl.returning("i'm definitely a URL")
         MockHttpClient.get.return_value = {

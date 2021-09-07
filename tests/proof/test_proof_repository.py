@@ -1,17 +1,17 @@
 from unittest import TestCase, mock
-from enchaintesdk.shared.utils import Utils
-from enchaintesdk.proof.repository.proof_repository import ProofRepository
-from enchaintesdk.proof.entity.proof_entity import Proof
-from enchaintesdk.infrastructure.http.dto.api_response_entity import ApiResponse
-from enchaintesdk.message.entity.message_entity import Message
-from enchaintesdk.proof.entity.exception.proof_verification_exception import ProofVerificationException
+from bloock.shared.utils import Utils
+from bloock.proof.repository.proof_repository import ProofRepository
+from bloock.proof.entity.proof_entity import Proof
+from bloock.infrastructure.http.dto.api_response_entity import ApiResponse
+from bloock.record.entity.record_entity import Record
+from bloock.proof.entity.exception.proof_verification_exception import ProofVerificationException
 
 
 class testProofRepository(TestCase):
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_retrieve_proof_okay(self, MockHttpClient, MockBlockchainClient, MockConfig):
         MockHttpClient.post.return_value = {
                 "bitmap": "bfdf7000",
@@ -28,7 +28,7 @@ class testProofRepository(TestCase):
             }
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = proof_repo.retrieveProof([Message(
+        proof = proof_repo.retrieveProof([Record(
             "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5")])
         self.assertIsInstance(proof, Proof)
         self.assertEqual(proof.bitmap, 'bfdf7000',
@@ -43,9 +43,9 @@ class testProofRepository(TestCase):
             "68b8f6b25cc700e64ed3e3d33f2f246e24801f93d29786589fbbab3b11f5bcee"
         ], 'Expecting different nodes array')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_keccak(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000']
@@ -61,9 +61,9 @@ class testProofRepository(TestCase):
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_keccak_2(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000']
@@ -79,9 +79,9 @@ class testProofRepository(TestCase):
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_keccak_3(self, MockHttpClient, MockBlockchainClient, MockConfig):
 
         leaves = [
@@ -98,9 +98,9 @@ class testProofRepository(TestCase):
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_failing_invalid_leaf(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '000000000000000000000000000000000000000000000000000000000000000']
@@ -115,9 +115,9 @@ class testProofRepository(TestCase):
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_failing_invalid_node(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000']
@@ -132,9 +132,9 @@ class testProofRepository(TestCase):
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_failing_invalid_depth(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000']
@@ -149,9 +149,9 @@ class testProofRepository(TestCase):
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_failing_invalid_bitmap(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000']
@@ -168,9 +168,9 @@ class testProofRepository(TestCase):
 
     ''' #TESTS IN BLAKE2B
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_1(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '72aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9']
@@ -189,9 +189,9 @@ class testProofRepository(TestCase):
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_2(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '82aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9',
@@ -208,9 +208,9 @@ class testProofRepository(TestCase):
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_3(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '3b7a824a1572e5c64bc280d97cc658bebbd7f85032bda98d478012335637e34c']
@@ -230,9 +230,9 @@ class testProofRepository(TestCase):
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.infrastructure.blockchain.web3.Web3Client')
-    @mock.patch('enchaintesdk.infrastructure.http.http_client.HttpClient')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
+    @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_4(self, MockHttpClient, MockBlockchainClient, MockConfig):
         leaves = [
             '72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9']

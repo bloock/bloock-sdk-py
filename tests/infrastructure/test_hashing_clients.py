@@ -1,6 +1,6 @@
 from unittest import TestCase
-from enchaintesdk.infrastructure.hashing.blake2b import Blake2b
-from enchaintesdk.infrastructure.hashing.keccak import Keccak
+from bloock.infrastructure.hashing.blake2b import Blake2b
+from bloock.infrastructure.hashing.keccak import Keccak
 
 
 class Blake2bTestCase(TestCase):

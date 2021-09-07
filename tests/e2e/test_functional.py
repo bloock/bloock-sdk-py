@@ -1,26 +1,29 @@
 from unittest import TestCase
 import os
-from enchaintesdk.enchainte_client import EnchainteClient
-from enchaintesdk.message.entity.message_entity import Message
-from enchaintesdk.anchor.entity.anchor_entity import Anchor
-from enchaintesdk.proof.entity.proof_entity import Proof
-from enchaintesdk.config.entity.config_env_entity import ConfigEnv
+from bloock.bloock_client import BloockClient
+from bloock.record.entity.record_entity import Record
+from bloock.anchor.entity.anchor_entity import Anchor
+from bloock.proof.entity.proof_entity import Proof
+from bloock.config.entity.config_env_entity import ConfigEnv
 
 
 def getSDK():
     api_key = os.environ['API_KEY']
-    return EnchainteClient(api_key, ConfigEnv.TEST)
+    host = os.environ['API_HOST']
+    client = BloockClient(api_key)
+    client.setApiHost(host)
+    return client
 
 
-class testFunctionalSendMessage(TestCase):
+class testFunctionalSendRecord(TestCase):
 
-    def test_send_message_okay(self):
+    def test_send_record_okay(self):
         sdk = getSDK()
-        messages = [
-            Message.fromString("Example Data")
+        records = [
+            Record.fromString("Example Data")
         ]
         try:
-            sendReceipt = sdk.sendMessages(messages)
+            sendReceipt = sdk.sendRecords(records)
             anchor = sdk.waitAnchor(sendReceipt[0].anchor)
             self.assertIsInstance(anchor, Anchor)
         except Exception:
@@ -30,12 +33,12 @@ class testFunctionalSendMessage(TestCase):
 class testFunctionalWaitAnchor(TestCase):
     def test_wait_anchor_okay(self):
         sdk = getSDK()
-        messages = [
-            Message.fromString("Example Data 1"),
-            Message.fromString("Example Data 2"),
-            Message.fromString("Example Data 3")
+        records = [
+            Record.fromString("Example Data 1"),
+            Record.fromString("Example Data 2"),
+            Record.fromString("Example Data 3")
         ]
-        send_receipt = sdk.sendMessages(messages)
+        send_receipt = sdk.sendRecords(records)
         self.assertIsNotNone(send_receipt)
 
         receipt = sdk.waitAnchor(send_receipt[0].anchor)
@@ -47,20 +50,20 @@ class testFunctionalWaitAnchor(TestCase):
         self.assertIsNotNone(receipt.status)
 
 
-class testFetchMessages(TestCase):
-    def test_fetch_messages_okay(self):
+class testFetchRecords(TestCase):
+    def test_fetch_records_okay(self):
         sdk = getSDK()
-        messages = [
-            Message.fromString("Example Data 1"),
-            Message.fromString("Example Data 2"),
-            Message.fromString("Example Data 3")
+        records = [
+            Record.fromString("Example Data 1"),
+            Record.fromString("Example Data 2"),
+            Record.fromString("Example Data 3")
         ]
-        send_receipt = sdk.sendMessages(messages)
+        send_receipt = sdk.sendRecords(records)
         self.assertIsNotNone(send_receipt)
 
         sdk.waitAnchor(send_receipt[0].anchor)
-        message_receipts = sdk.getMessages(messages)
-        for mr in message_receipts:
+        record_receipts = sdk.getRecords(records)
+        for mr in record_receipts:
             self.assertEqual(mr.status, 'Success',
                              'Status does not match with the expected.')
 
@@ -68,11 +71,11 @@ class testFetchMessages(TestCase):
 class testGetProof(TestCase):
     def test_get_proof_okay(self):
         sdk = getSDK()
-        messages = [
-            Message.fromString("Example Data 1"),
-            Message.fromString("Example Data 2"),
-            Message.fromString("Example Data 3")
+        records = [
+            Record.fromString("Example Data 1"),
+            Record.fromString("Example Data 2"),
+            Record.fromString("Example Data 3")
         ]
-        proof = sdk.getProof(messages)
+        proof = sdk.getProof(records)
         self.assertIsNotNone(proof)
         self.assertIsInstance(proof, Proof)

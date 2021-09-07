@@ -1,58 +1,58 @@
 from unittest import TestCase, mock
-from enchaintesdk.message.entity.message_entity import Message
-from enchaintesdk.message.entity.message_receipt_entity import MessageReceipt
-from enchaintesdk.message.entity.exception.invalid_message_exception import InvalidMessageException
-from enchaintesdk.message.entity.dto.message_write_response_entity import MessageWriteResponse
-from enchaintesdk.message.service.message_service import MessageService
-from enchaintesdk.message.repository.message_repository import MessageRepository
+from bloock.record.entity.record_entity import Record
+from bloock.record.entity.record_receipt_entity import RecordReceipt
+from bloock.record.entity.exception.invalid_record_exception import InvalidRecordException
+from bloock.record.entity.dto.record_write_response_entity import RecordWriteResponse
+from bloock.record.service.record_service import RecordService
+from bloock.record.repository.record_repository import RecordRepository
 
 
-class MessageServiceTestCase(TestCase):
+class RecordServiceTestCase(TestCase):
 
-    @mock.patch('enchaintesdk.message.entity.message_entity.Message.isValid')
-    @mock.patch('enchaintesdk.message.repository.message_repository.MessageRepository')
-    def test_send_messages_okay(self, MockMessageRepo, MockMessage):
-        MockMessageRepo.sendMessages.return_value = MessageWriteResponse({
+    @mock.patch('bloock.record.entity.record_entity.Record.isValid')
+    @mock.patch('bloock.record.repository.record_repository.RecordRepository')
+    def test_send_records_okay(self, MockRecordRepo, MockRecord):
+        MockRecordRepo.sendRecords.return_value = RecordWriteResponse({
             'anchor': 80,
             'client': 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
             'messages': ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'],
             'status': 'Pending'})
-        MockMessage.return_value = True
-        m_repo = MessageService(MockMessageRepo)
-        r = m_repo.sendMessages([Message('message')])
-        self.assertIsInstance(r[0], MessageReceipt, "Wrong return type")
+        MockRecord.return_value = True
+        m_repo = RecordService(MockRecordRepo)
+        r = m_repo.sendRecords([Record('record')])
+        self.assertIsInstance(r[0], RecordReceipt, "Wrong return type")
         self.assertEqual(r[0].anchor, 80, 'Wrong anchor')
         self.assertEqual(
             r[0].client, 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea', 'Wrong client')
-        self.assertEqual(r[0].message,
-                         '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5', 'Wrong messages')
+        self.assertEqual(r[0].record,
+                         '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5', 'Wrong records')
         self.assertEqual(r[0].status, 'Pending', 'Wrong anchor')
 
-    @mock.patch('enchaintesdk.message.entity.message_entity.Message.isValid')
-    @mock.patch('enchaintesdk.message.repository.message_repository.MessageRepository')
-    def test_send_messages_some_invalid_message_error(self, MockMessageRepo, MockMessage):
-        MockMessageRepo.sendMessages.return_value = MessageWriteResponse({
+    @mock.patch('bloock.record.entity.record_entity.Record.isValid')
+    @mock.patch('bloock.record.repository.record_repository.RecordRepository')
+    def test_send_records_some_invalid_record_error(self, MockRecordRepo, MockRecord):
+        MockRecordRepo.sendRecords.return_value = RecordWriteResponse({
             'anchor': 80,
             'client': 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
-            'messages': ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5', 'message2', ''],
+            'records': ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5', 'record2', ''],
             'status': 'Pending'})
-        MockMessage.return_value = False
-        m_repo = MessageService(MockMessageRepo)
-        with self.assertRaises(InvalidMessageException):
-            m_repo.sendMessages([Message('message')])
+        MockRecord.return_value = False
+        m_repo = RecordService(MockRecordRepo)
+        with self.assertRaises(InvalidRecordException):
+            m_repo.sendRecords([Record('record')])
 
-    @mock.patch('enchaintesdk.message.repository.message_repository.MessageRepository')
-    def test_get_messages_okay(self, MockMessageRepo):
-        MockMessageRepo.fetchMessages.return_value = [MessageReceipt(80,
+    @mock.patch('bloock.record.repository.record_repository.RecordRepository')
+    def test_get_records_okay(self, MockRecordRepo):
+        MockRecordRepo.fetchRecords.return_value = [RecordReceipt(80,
                                                                      'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
                                                                      '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5',
                                                                      'Pending')]
-        m_service = MessageService(MockMessageRepo)
-        r = m_service.getMessages(
-            [Message('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')])
+        m_service = RecordService(MockRecordRepo)
+        r = m_service.getRecords(
+            [Record('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')])
         self.assertEqual(r[0].anchor, 80, 'Wrong anchor')
         self.assertEqual(
             r[0].client, 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea', 'Wrong client')
         self.assertEqual(
-            r[0].message, '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5', 'Wrong messages')
+            r[0].record, '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5', 'Wrong records')
         self.assertEqual(r[0].status, 'Pending', 'Wrong anchor')

@@ -1,8 +1,8 @@
-from enchaintesdk.anchor.service.anchor_service import AnchorService
-from enchaintesdk.anchor.entity.anchor_entity import Anchor
-from enchaintesdk.anchor.entity.anchor_entity import Anchor
-from enchaintesdk.config.entity.configuration_entity import Configuration
-from enchaintesdk.infrastructure.http.http_exception import HttpRequestException
+from bloock.anchor.service.anchor_service import AnchorService
+from bloock.anchor.entity.anchor_entity import Anchor
+from bloock.anchor.entity.anchor_entity import Anchor
+from bloock.config.entity.configuration_entity import Configuration
+from bloock.infrastructure.http.http_exception import HttpRequestException
 from unittest import TestCase, mock
 import time
 
@@ -20,8 +20,8 @@ class testAnchorService(TestCase):
         return Anchor(
             1, ['block_root'], [], 'root', 'Success')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.anchor.repository.anchor_repository.AnchorRepository')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.anchor.repository.anchor_repository.AnchorRepository')
     def test_get_anchor_okay(self, MockAnchorRepo, MockConfig):
         MockAnchorRepo.getAnchor.return_value = Anchor(
             1, ['block_root'], [], 'root', 'Success')
@@ -35,8 +35,8 @@ class testAnchorService(TestCase):
         self.assertEqual(anchor.root, 'root', 'root do not match.')
         self.assertEqual(anchor.status, 'Success', 'status do not match.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.anchor.repository.anchor_repository.AnchorRepository')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.anchor.repository.anchor_repository.AnchorRepository')
     def test_wait_anchor_okay_first_try(self, MockAnchorRepo, MockConfig):
         self.counter = 0
         self.maxCount = 0
@@ -53,13 +53,13 @@ class testAnchorService(TestCase):
         self.assertEqual(anchor.root, 'root', 'root do not match.')
         self.assertEqual(anchor.status, 'Success', 'status do not match.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.anchor.repository.anchor_repository.AnchorRepository')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.anchor.repository.anchor_repository.AnchorRepository')
     def test_wait_anchor_okay_after_3_retries(self, MockAnchorRepo, MockConfig):
         self.counter = 0
         self.maxCount = 3
         config = Configuration()
-        config.wait_message_interval_default = 1000
+        config.wait_record_interval_default = 1000
         MockConfig.getConfiguration.return_value = config
         MockAnchorRepo.getAnchor.side_effect = self.sideeffect_getAnchor
         anchor_service = AnchorService(MockAnchorRepo, MockConfig)
@@ -80,13 +80,13 @@ class testAnchorService(TestCase):
         self.assertGreater(finish-start, 4, 'Everyting went too fast.')
         self.assertGreater(4.25, finish-start, 'Everyting went too slow.')
 
-    @mock.patch('enchaintesdk.config.service.config_service.ConfigService')
-    @mock.patch('enchaintesdk.anchor.repository.anchor_repository.AnchorRepository')
+    @mock.patch('bloock.config.service.config_service.ConfigService')
+    @mock.patch('bloock.anchor.repository.anchor_repository.AnchorRepository')
     def test_wait_anchor_timeout(self, MockAnchorRepo, MockConfig):
         self.counter = 0
         self.maxCount = 3
         config = Configuration()
-        config.wait_message_interval_default = 1
+        config.wait_record_interval_default = 1
         MockConfig.getConfiguration.return_value = config
 
         MockAnchorRepo.getAnchor.side_effect = self.sideeffect_getAnchor

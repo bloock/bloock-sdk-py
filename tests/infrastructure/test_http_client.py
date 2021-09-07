@@ -1,7 +1,7 @@
 from unittest import TestCase
-from enchaintesdk.infrastructure.http.http_data import HttpData
-from enchaintesdk.infrastructure.http.http_client import HttpClient
-from enchaintesdk.infrastructure.http.dto.api_response_entity import ApiResponse
+from bloock.infrastructure.http.http_data import HttpData
+from bloock.infrastructure.http.http_client import HttpClient
+from bloock.infrastructure.http.dto.api_response_entity import ApiResponse
 
 
 class HttpClientTestCase(TestCase):

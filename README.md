@@ -1,17 +1,17 @@
-# Enchainté SDK -  Python
+# Bloock SDK -  Python
 
-This SDK offers all the features available in the Enchainté Toolset:
-- Write messages
-- Get messages proof
+This SDK offers all the features available in the Bloock Toolset:
+- Write records
+- Get records proof
 - Validate proof
-- Get messages details
+- Get records details
 
 ## Installation
 
 The SDK can be installed with PIP as follows:
 
 ```shell
-$ pip install enchaintesdk
+$ pip install bloock
 ```
 
 ## Usage
@@ -20,143 +20,143 @@ The following examples summarize how to access the different functionalities ava
 
 ### Prepare data
 
-In order to interact with the SDK data must be processed through the Message module.
+In order to interact with the SDK data must be processed through the Record module.
 
-There are several ways to generate a Message:
+There are several ways to generate a Record:
 
 ```python
-from enchaintesdk import Message
+from bloock import Record
 
 # From a dict
 d = {'data': 'Example Data'}
-Message.fromDict(d)
+Record.fromDict(d)
 
 # From a hash string (hex encoded 64-chars long string with no "0x" prefix)
-Message.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
+Record.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
 
 # From a hex encoded string (with no "0x" prefix)
-Message.fromHex('0123456789abcdef')
+Record.fromHex('0123456789abcdef')
 
 # From a string
-Message.fromString('Example Data')
+Record.fromString('Example Data')
 
 # From a bytes
-Message.fromBytes(b'Example Data')
+Record.fromBytes(b'Example Data')
 
-# Retrieve the computed message
-Message.fromBytes(b'Example Data').getHash()
+# Retrieve the computed record
+Record.fromBytes(b'Example Data').getHash()
 ```
 
-### Send messages
+### Send records
 
-This example shows how to send data to Enchainté.
+This example shows how to send data to Bloock.
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
+from bloock import BloockClient, Record, BloockException
 import os
 
-api_key = os.getenv("ENCHAINTE_APIKEY", default='api_key')
-client = EnchainteClient(api_key, environment=ConfigEnv.TEST)
+api_key = os.getenv("BLOOCK_APIKEY", default='api_key')
+client = BloockClient(api_key)
 
-messages = [Message.fromString('Example Data 1')]
+records = [Record.fromString('Example Data 1')]
 
 try:
-	send_receipt = client.sendMessages(messages)
+    send_receipt = client.sendRecords(records)
     print('sendReceipt status: ', send_receipt[0].status)
-except EnchainteSDKException:
+except BloockException:
 	raise
 ```
 
-### Get messages status
+### Get records status
 
-This example shows how to get all the details and status of messages:
+This example shows how to get all the details and status of records:
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
+from bloock import BloockClient, Record, BloockException
 import os
 
-apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
-client = EnchainteClient(apiKey, environment=ConfigEnv.TEST)
+apiKey = os.getenv("BLOOCK_APIKEY", default='apiKey')
+client = BloockClient(apiKey)
 
-messages = [
-    Message.fromString('Example Data 1'),
-    Message.fromString('Example Data 2'),
-    Message.fromString('Example Data 3')
+records = [
+    Record.fromString('Example Data 1'),
+    Record.fromString('Example Data 2'),
+    Record.fromString('Example Data 3')
 ]
 
 try:
-	m_receipts = client.getMessages(messages)
+	m_receipts = client.getRecords(records)
     for mr in m_receipts:
-        print("MessageReceipt: {{anchor_id: {}, client:{}, message:{}, status:{}}}".format(
-            mr.anchor, mr.client, mr.message, mr.status))
-except EnchainteSDKException:
+        print("RecordReceipt: {{anchor_id: {}, client:{}, record:{}, status:{}}}".format(
+            mr.anchor, mr.client, mr.record, mr.status))
+except BloockException:
 	raise
 ```
 
 
-### Wait for messages to process
+### Wait for records to process
 
-This example shows how to wait for a message to be processed by Enchainté after sending i:
+This example shows how to wait for a record to be processed by Bloock after sending it:
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
+from bloock import BloockClient, Record, BloockException
 import os
 
-api_key = os.getenv("ENCHAINTE_APIKEY", default='api_key')
-client = EnchainteClient(api_key, environment=ConfigEnv.TEST)
-messages = [Message.fromString('Example Data 1')]
+api_key = os.getenv("BLOOCK_APIKEY", default='api_key')
+client = BloockClient(api_key)
+records = [Record.fromString('Example Data 1')]
 
 try:
-	send_receipt = client.sendMessages(messages)
+	send_receipt = client.sendRecords(records)
     anchor = client.waitAnchor(send_receipt[0].anchor)
     print("Anchor: {{id: {}, blocks:{}, network:{}, root: {}, status:{}}}".format(
         anchor.id, anchor.block_roots, anchor.networks, anchor.root, anchor.status))
-except EnchainteSDKException:
+except BloockException:
 	raise
 ```
 
-### Get and validate messages proof
+### Get and validate records proof
 
-This example shows how to get a proof for an array of messages and validate it:
+This example shows how to get a proof for an array of records and validate it:
 
 ```python
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException, ConfigEnv
+from bloock import BloockClient, Record, BloockException
 import os
 
-apiKey = os.getenv("ENCHAINTE_APIKEY", default='apiKey')
+apiKey = os.getenv("BLOOCK_APIKEY", default='apiKey')
 
-client = EnchainteClient(apiKey, environment=ConfigEnv.TEST)
+client = BloockClient(apiKey)
 
-messages = [
-    Message.fromString('Example Data 1'),
-    Message.fromString('Example Data 2'),
-    Message.fromString('Example Data 3')
+records = [
+    Record.fromString('Example Data 1'),
+    Record.fromString('Example Data 2'),
+    Record.fromString('Example Data 3')
 ]
 
 try:
-	proof = client.getProof(messages)
+	proof = client.getProof(records)
 	timestamp = client.verifyProof(proof)
-    # or simply: timestamp = client.verifyMessages(messages)
-    print('When were our messages sent to blockchain? : {}'.format(is_valid_boolean))
-except EnchainteSDKException:
+    # or simply: timestamp = client.verifyRecords(records)
+    print('When were our records sent to blockchain? : {}'.format(is_valid_boolean))
+except BloockException:
 	raise
 ```
 
 ### Full example
 
-This snippet shows a complete data cycle including: write, message status polling and proof retrieval and validation.
+This snippet shows a complete data cycle including: write, record status polling, proof retrieval and validation.
 
 ```python
 #!/usr/bin/env python3
 
-from enchaintesdk import EnchainteClient, Message, EnchainteSDKException
+from bloock import BloockClient, Record, BloockException
 import random
 import time
 import os
 
 
 def randHex(l):
-    ''' Helper function to generate a random message.'''
+    ''' Helper function to generate a random record.'''
     val = [int(random.uniform(0, 256)) for x in range(0, l)]
     result = ''
     for n in val:
@@ -167,16 +167,16 @@ def randHex(l):
 def main():
     apiKey = os.getenv("API_KEY", default='apiKey')
 
-    client = EnchainteClient(apiKey)
+    client = BloockClient(apiKey)
 
     try:
-        messages = [Message.fromString(randHex(64))]
-        send_receipt = client.sendMessages(messages)
-        print('Message sent to Enchainté. Waiting for anchor to be processed ...')
+        records = [Record.fromString(randHex(64))]
+        send_receipt = client.sendRecords(records)
+        print('Record sent to Bloock. Waiting for anchor to be processed ...')
         client.waitAnchor(send_receipt[0].anchor)
 
-        print('Anchor retrieved. Getting Message proof ...')
-        proof = client.getProof(messages)
+        print('Anchor retrieved. Getting Record proof ...')
+        proof = client.getProof(records)
 
         print('Verifying proof ...')
         timestamp = client.verifyProof(proof)
@@ -186,7 +186,7 @@ def main():
 
         print('Success!')
 
-    except EnchainteSDKException as e:
+    except BloockException as e:
         print(e)
 
 
