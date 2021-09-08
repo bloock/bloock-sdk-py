@@ -75,8 +75,8 @@ This example shows how to get all the details and status of records:
 from bloock import BloockClient, Record, BloockException
 import os
 
-apiKey = os.getenv("BLOOCK_APIKEY", default='apiKey')
-client = BloockClient(apiKey)
+api_key = os.getenv("BLOOCK_APIKEY", default='apiKey')
+client = BloockClient(api_key)
 
 records = [
     Record.fromString('Example Data 1'),
@@ -85,7 +85,7 @@ records = [
 ]
 
 try:
-	m_receipts = client.getRecords(records)
+    m_receipts = client.getRecords(records)
     for mr in m_receipts:
         print("RecordReceipt: {{anchor_id: {}, client:{}, record:{}, status:{}}}".format(
             mr.anchor, mr.client, mr.record, mr.status))
@@ -107,7 +107,7 @@ client = BloockClient(api_key)
 records = [Record.fromString('Example Data 1')]
 
 try:
-	send_receipt = client.sendRecords(records)
+    send_receipt = client.sendRecords(records)
     anchor = client.waitAnchor(send_receipt[0].anchor)
     print("Anchor: {{id: {}, blocks:{}, network:{}, root: {}, status:{}}}".format(
         anchor.id, anchor.block_roots, anchor.networks, anchor.root, anchor.status))
@@ -123,10 +123,11 @@ This example shows how to get a proof for an array of records and validate it:
 from bloock import BloockClient, Record, BloockException
 import os
 
-apiKey = os.getenv("BLOOCK_APIKEY", default='apiKey')
+api_key = os.getenv("BLOOCK_APIKEY", default='apiKey')
 
-client = BloockClient(apiKey)
+client = BloockClient(api_key)
 
+# records already sentand anchored by Bloock 
 records = [
     Record.fromString('Example Data 1'),
     Record.fromString('Example Data 2'),
@@ -134,12 +135,15 @@ records = [
 ]
 
 try:
-	proof = client.getProof(records)
-	timestamp = client.verifyProof(proof)
-    # or simply: timestamp = client.verifyRecords(records)
-    print('When were our records sent to blockchain? : {}'.format(is_valid_boolean))
+    proof = client.getProof(records)
+    # verifyProof optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
+    timestamp = client.verifyProof(proof)   
+    print('When were our records sent to blockchain? : {}'.format(0<timestamp))
+    # one can also use the following function:
+    timestamp2 = client.verifyRecords(records)
+    print('When were our records sent to blockchain? : {}'.format(0<timestamp2))
 except BloockException:
-	raise
+    raise
 ```
 
 ### Full example
@@ -151,7 +155,6 @@ This snippet shows a complete data cycle including: write, record status polling
 
 from bloock import BloockClient, Record, BloockException
 import random
-import time
 import os
 
 
@@ -165,9 +168,9 @@ def randHex(l):
 
 
 def main():
-    apiKey = os.getenv("API_KEY", default='apiKey')
+    api_key = os.getenv("API_KEY", default='apiKey')
 
-    client = BloockClient(apiKey)
+    client = BloockClient(api_key)
 
     try:
         records = [Record.fromString(randHex(64))]
@@ -179,6 +182,8 @@ def main():
         proof = client.getProof(records)
 
         print('Verifying proof ...')
+        
+        # verifyProof optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
         timestamp = client.verifyProof(proof)
 
         if timestamp <= 0:
