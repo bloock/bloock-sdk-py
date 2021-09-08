@@ -117,7 +117,9 @@ except BloockException:
 
 ### Get and validate records proof
 
-This example shows how to get a proof for an array of records and validate it:
+The following example shows how to obtain a proof for an array of records and validate it.
+Keep in mind despite having Ethereum mainnet and Rinkeby available, only Bloockchain is
+usable when working with test api keys. 
 
 ```python
 from bloock import BloockClient, Record, BloockException
@@ -136,7 +138,7 @@ records = [
 
 try:
     proof = client.getProof(records)
-    # verifyProof optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
+    # verifyProof's optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
     timestamp = client.verifyProof(proof)   
     print('When were our records sent to blockchain? : {}'.format(0<timestamp))
     # one can also use the following function:
@@ -183,7 +185,7 @@ def main():
 
         print('Verifying proof ...')
         
-        # verifyProof optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
+        # verifyProof's optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
         timestamp = client.verifyProof(proof)
 
         if timestamp <= 0:
