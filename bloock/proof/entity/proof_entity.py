@@ -1,16 +1,31 @@
 from bloock.shared.utils import Utils
 from typing import List
 
+class ProofNetwork:
+    def __init__(self, data):
+        self.name = data['name']
+        self.tx_hash = data['tx_hash']
+        self.state = data['state']
+        self.created_at = data['created_at']
+
+class ProofAnchor:
+    def __init__(self, data):
+        self.anchor_id = data['anchor_id']
+        self.root = data['root']
+        self.networks = [ProofNetwork(n) for n in data['networks']]
+        self.status = data['status']
+
 class Proof:
     ''' Proof is the object in charge of storing all data necessary to compute
         a data integrity check.
     '''
 
-    def __init__(self, leaves: List[str], nodes: List[str], depth: str, bitmap: str):
+    def __init__(self, leaves: List[str], nodes: List[str], depth: str, bitmap: str, anchor: dict):
         self.leaves = leaves
         self.nodes = nodes
         self.depth = depth
         self.bitmap = bitmap
+        self.anchor = ProofAnchor(anchor)
 
     @staticmethod
     def isValid(proof) -> bool:

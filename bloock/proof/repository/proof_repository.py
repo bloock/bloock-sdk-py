@@ -17,11 +17,15 @@ class ProofRepository:
         self.__blockchain_client = blockchain_client
         self.__config_service = config_service
 
-    def retrieveProof(self, records: List[Record]) -> Proof:
+    def retrieveProof(self, records: List[Record], network: Network, date: float) -> Proof:
         url = f'{self.__config_service.getApiBaseUrl()}/core/proof'
         body = {'messages': [m.getHash() for m in records]}
+        if network is not None:
+            body['network'] = network.value
+        if date is not None:
+            body['date'] = int(date //1)
         response = self.__http_client.post(url, body)
-        return Proof(response['leaves'], response['nodes'], response['depth'], response['bitmap'])
+        return Proof(response['leaves'], response['nodes'], response['depth'], response['bitmap'], response['anchor'])
 
     def verifyProof(self, proof: Proof) -> Record:
 

@@ -39,7 +39,7 @@ class testE2EAcceptanceBloockClient(TestCase):
         self.assertIsNotNone(send_receipt)
         sdk.waitAnchor(send_receipt[0].anchor)
         proof = sdk.getProof(records)
-        timestamp = sdk.verifyProof(proof, Network.BLOOCK_CHAIN)
+        timestamp = sdk.verifyProof(proof)
         self.assertGreater(timestamp, 0, 'Timestamp was not greater than 0.')
 
     def test_send_records_invalid_record_input_wrong_char(self):
@@ -184,3 +184,52 @@ class testE2EAcceptanceBloockClient(TestCase):
         with self.assertRaises(HttpRequestException):
             sdk.verifyRecords(
                 [Record('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')], Network.BLOOCK_CHAIN)
+
+    #TODO: no sé si es podrà fer aquest test per assegurar que la xarxa que especifico
+    #      és la xarxa on entra l'anchor
+    #def test_get_proof_network_specific_okay(self):
+
+    def test_get_proof_valid_date_filter(self):
+        sdk = getSDK()
+        records = [Record.fromBytes(randHex(64))]
+        send_receipt = sdk.sendRecords(records)
+        self.assertIsNotNone(send_receipt)
+        sdk.waitAnchor(send_receipt[0].anchor)
+        date = time.time()
+        proof = sdk.getProof(records, date = date)
+        timestamp = sdk.verifyProof(proof)
+        self.assertGreater(date, timestamp, 'Date was not greater than blockchain timestamp.')
+
+    def test_get_proof_impossible_date_filter(self):
+        date = time.time()
+        sdk = getSDK()
+        records = [Record.fromBytes(randHex(64))]
+        send_receipt = sdk.sendRecords(records)
+        self.assertIsNotNone(send_receipt)
+        sdk.waitAnchor(send_receipt[0].anchor)
+        with self.assertRaises(Exception) as context:
+            sdk.getProof(records, date = date)
+        self.assertTrue("HttpClient response was not successful: Proof not found." in str(context.exception))
+
+    def test_verify_records_valid_date_filter(self):
+        sdk = getSDK()
+        records = [Record.fromBytes(randHex(64))]
+        send_receipt = sdk.sendRecords(records)
+        self.assertIsNotNone(send_receipt)
+        sdk.waitAnchor(send_receipt[0].anchor)
+        date = time.time()
+        timestamp = sdk.verifyRecords(records, date = date)
+        self.assertGreater(date, timestamp, 'Date was not greater than blockchain timestamp.')
+
+    def test_verify_records_impossible_date_filter(self):
+        date = time.time()
+        sdk = getSDK()
+        records = [Record.fromBytes(randHex(64))]
+        send_receipt = sdk.sendRecords(records)
+        self.assertIsNotNone(send_receipt)
+        sdk.waitAnchor(send_receipt[0].anchor)
+        with self.assertRaises(Exception) as context:
+            sdk.verifyRecords(records, date = date)
+        self.assertTrue("HttpClient response was not successful: Proof not found." in str(context.exception))
+
+

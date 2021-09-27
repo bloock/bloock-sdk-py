@@ -72,9 +72,9 @@ class BloockClient:
             Parameters
             ----------
             network : Network
-                .
+                Network to be overriden.
             configuration: networkConfiguration
-                .
+                New configuration for the overriden Network.
             
         '''
         return self.__config_service.setNetworkConfiguration(network, configuration)
@@ -124,7 +124,7 @@ class BloockClient:
         return self.__record_service.getRecords(records)
 
     def getAnchor(self, anchor: int) -> Anchor:
-        ''' Gets an specific anchor id details.
+        ''' Gets a specific anchor id details.
 
             Parameters
             ----------
@@ -170,17 +170,25 @@ class BloockClient:
         '''
         return self.__anchor_service.waitAnchor(anchor, timeout)
 
-    def getProof(self, records: List[Record]) -> Proof:
+    def getProof(self, records: List[Record], network: Network = None, date: float = None) -> Proof:
         ''' Retrieves an integrity Proof for the specified list of Record.
+            The result can be filtered by network and date.
 
             Parameters
             ----------
             records: List[Record]
                 List of records to validate.
+            network (optional): Network
+                Network where the Records were uploaded. If value is set to
+                None, the Proof obtained will come from any of the available
+                networks.
+            date (optional): float
+                Time as UNIX timestamp in seconds (decimals will be truncated)
+                from which, at least, the proof must be valid.
 
             Returns
             -------
-            Proof/None 
+            Proof
                 The Proof object containing the elements necessary to verify
                 the integrity of the records in the input list. If no
                 record was requested, then returns None.
@@ -192,51 +200,57 @@ class BloockClient:
             HttpRequestException
                 Error return by Bloock's API.
         '''
-        return self.__proof_service.retrieveProof(records)
+        return self.__proof_service.retrieveProof(records, network, date)
 
-    def verifyProof(self, proof: Proof, network: Network = Network.ETHEREUM_MAINNET) -> int:
-        ''' Verifies if the specified integrity Proof is valid and checks if 
-            it's currently included in the blockchain.
+    def verifyProof(self, proof: Proof) -> int:
+        ''' Verifies if the specified integrity Proof is valid against
+            the blockchains where the records were sent.
+            Returns the timestamp of the latest blockchain to recieve the anchor
+            containing all records represented in the proof.
 
             Parameters
             ----------
             proof: Proof
                 Proof to validate.
-            network: Network
-                Blockchain network where the proof will be validated.
             
             Returns
             -------
             int
-                A int contining the timestamp from when the records where sent to blockchain.
-                Its value is 0 not found.
+                An int containing the timestamp from when the records where sent to blockchain.
+                If the return value is 0, no Proof was found.
 
             Exceptions
             ----------
             ProofVerificationException
                 Error informing that at least one of the parameters of the Proof
-                has not a valid value.
+                has a non valid value.
             Web3Exception
                 Error connecting to blockchain.
         '''
-        return self.__proof_service.verifyProof(proof, network)
+        return self.__proof_service.verifyProof(proof)
 
-    def verifyRecords(self, records: List[Record], network: Network = Network.ETHEREUM_MAINNET) -> int:
-        ''' It retrieves a proof for the specified list of Anchor using getProof and
-            verifies it using verifyProof.
+    def verifyRecords(self, records: List[Record], network: Network = Network.ETHEREUM_MAINNET, date: float = None) -> int:
+        ''' Verifies if the specified list of records had been uploaded to the
+            specified blockchain (any by default). Returns the timestamp of the
+            latest blockchain to recieve the anchor containing all records 
+            represented in the proof.
 
             Parameters
             ----------
             records: List[Record]
-                List of records to validate
-            network: Network
-                Blockchain network where the proof will be validated.
+                List of records to validate.
+            network (optional): Network
+                Blockchain network where the proof will be validated. If set to
+                None, any network will be used.
+            date (optional): float
+                Time as UNIX timestamp in seconds (decimals will be truncated)
+                from which, at least, the proof must be valid.
             
             Returns
             -------
             int
-                A int contining the timestamp from when the records where sent to blockchain.
-                Its value is 0 not found.
+                An int containing the timestamp from when the records where sent to blockchain.
+                If the return value is 0, no Proof was found.
 
             Exceptions
             ----------
@@ -249,5 +263,8 @@ class BloockClient:
                 has not a valid value.
             Web3Exception
                 Error connecting to blockchain.
+            ValueError
+                At least one of the networks contained inside the Proof object is not
+                a recognized Network.
         '''
-        return self.__proof_service.verifyRecords(records, network)
+        return self.__proof_service.verifyRecords(records, network, date)

@@ -1,7 +1,7 @@
-from enum import Enum, auto
+from enum import Enum
 
 class Network(Enum):
-    ETHEREUM_MAINNET = auto()
-    ETHEREUM_RINKEBY = auto()
-    BLOOCK_CHAIN = auto()
+    ETHEREUM_MAINNET = 'ethereum_mainnet'
+    ETHEREUM_RINKEBY = 'ethereum_rinkeby'
+    BLOOCK_CHAIN = 'bloock_chain'
 

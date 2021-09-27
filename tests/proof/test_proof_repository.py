@@ -1,11 +1,12 @@
+from bloock.config.entity.networks_entity import Network
 from unittest import TestCase, mock
 from bloock.shared.utils import Utils
 from bloock.proof.repository.proof_repository import ProofRepository
-from bloock.proof.entity.proof_entity import Proof
+from bloock.proof.entity.proof_entity import Proof, ProofAnchor
 from bloock.infrastructure.http.dto.api_response_entity import ApiResponse
 from bloock.record.entity.record_entity import Record
 from bloock.proof.entity.exception.proof_verification_exception import ProofVerificationException
-
+from tests.common import get_anchor_dict
 
 class testProofRepository(TestCase):
 
@@ -24,12 +25,13 @@ class testProofRepository(TestCase):
                     "0616067c793ac533815ae2d48d785d339e0330ce5bb5345b5e6217dd9d1dbeab",
                     "68b8f6b25cc700e64ed3e3d33f2f246e24801f93d29786589fbbab3b11f5bcee"
                 ],
-                "root": "c6372dab6a48637173a457e3ae0c54a500bb50346e847eccf2b818ade94d8ccf"
+                "root": "c6372dab6a48637173a457e3ae0c54a500bb50346e847eccf2b818ade94d8ccf",
+                "anchor": get_anchor_dict()
             }
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
         proof = proof_repo.retrieveProof([Record(
-            "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5")])
+            "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5")], Network.BLOOCK_CHAIN, 0)
         self.assertIsInstance(proof, Proof)
         self.assertEqual(proof.bitmap, 'bfdf7000',
                          'Expecting different bitmap.')
@@ -42,6 +44,14 @@ class testProofRepository(TestCase):
             "0616067c793ac533815ae2d48d785d339e0330ce5bb5345b5e6217dd9d1dbeab",
             "68b8f6b25cc700e64ed3e3d33f2f246e24801f93d29786589fbbab3b11f5bcee"
         ], 'Expecting different nodes array')
+        self.assertEqual(proof.anchor.anchor_id, 387, 'Expecting different anchor id')
+        self.assertEqual(proof.anchor.root, "c6372dab6a48637173a457e3ae0c54a500bb50346e847eccf2b818ade94d8ccf", 'Expecting different root value')
+        self.assertEqual(proof.anchor.anchor_id, 387, 'Expecting different anchor id')
+        self.assertEqual(proof.anchor.networks[0].name, 'ethereum_ganache', 'Expecting different network name')
+        self.assertEqual(proof.anchor.networks[0].tx_hash, '0xc087797b9700245c8e3f678874e9c419297f2302cb822d798ca94cce8c27aea9', 'Expecting different tx_hash')
+        self.assertEqual(proof.anchor.networks[0].state, 'Confirmed', 'Expecting different state')
+        self.assertEqual(proof.anchor.networks[0].created_at, 1631873582, 'Expecting different created_at')
+        self.assertEqual(proof.anchor.status, 'Success', 'Expecting different status')
 
     @mock.patch('bloock.config.service.config_service.ConfigService')
     @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
@@ -55,9 +65,11 @@ class testProofRepository(TestCase):
         depth = '00010001'
         bitmap = '40'
         root = '8e4b8e18156a1c7271055ce5b7ef53bb370294ebd631a3b95418a92da46e681f'
+        anchor = get_anchor_dict()
+
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
@@ -73,9 +85,10 @@ class testProofRepository(TestCase):
         depth = '00000000'
         bitmap = '40'
         root = 'd5f4f7e1d989848480236fb0a5f808d5877abf778364ae50845234dd6c1e80fc'
+        anchor = get_anchor_dict()
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
@@ -83,7 +96,6 @@ class testProofRepository(TestCase):
     @mock.patch('bloock.infrastructure.blockchain.web3.Web3Client')
     @mock.patch('bloock.infrastructure.http.http_client.HttpClient')
     def test_verify_proof_keccak_3(self, MockHttpClient, MockBlockchainClient, MockConfig):
-
         leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000']
         nodes = [
@@ -92,9 +104,10 @@ class testProofRepository(TestCase):
         depth = '00010001'
         bitmap = '4000'
         root = '5c67902dc31624d9278c286ef4ce469451d8f1d04c1edb29a5941ca0e03ddc8d'
+        anchor = get_anchor_dict()
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         self.assertEqual(proof_repo.verifyProof(proof).getHash(), root,
                          'Proof not verifying correctly.')
 
@@ -109,9 +122,10 @@ class testProofRepository(TestCase):
         ]
         depth = '00000000'
         bitmap = '40'
+        anchor = get_anchor_dict()
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 
@@ -126,9 +140,10 @@ class testProofRepository(TestCase):
         ]
         depth = '00000000'
         bitmap = '40'
+        anchor = get_anchor_dict()
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 
@@ -145,7 +160,8 @@ class testProofRepository(TestCase):
         bitmap = '40'
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        anchor = get_anchor_dict()
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 
@@ -160,9 +176,10 @@ class testProofRepository(TestCase):
         ]
         depth = '000000000'
         bitmap = '4'
+        anchor = get_anchor_dict()
         proof_repo = ProofRepository(
             MockHttpClient, MockBlockchainClient, MockConfig)
-        proof = Proof(leaves, nodes, depth, bitmap)
+        proof = Proof(leaves, nodes, depth, bitmap, anchor)
         with self.assertRaises(ProofVerificationException):
             proof_repo.verifyProof(proof)
 

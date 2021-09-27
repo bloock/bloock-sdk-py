@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="bloock",
-    version="1.0.0",
+    version="1.0.1",
     author="Albert Canyelles Ruiz",
     author_email="acanyelles@enchainte.com",
     description="Bloock SDK for Python3",

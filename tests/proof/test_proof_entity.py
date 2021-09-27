@@ -1,7 +1,7 @@
 from unittest import TestCase, mock
 from bloock.shared.utils import Utils
 from bloock.proof.entity.proof_entity import Proof
-
+from tests.common import get_anchor_dict
 
 class testProofEntity(TestCase):
     def test_is_valid_okay(self):
@@ -14,7 +14,8 @@ class testProofEntity(TestCase):
         ]
         bitmap = "bfdf7000"
         depth = "0004000600060005"
-        self.assertTrue(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertTrue(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                         'Proof should be valid.')
 
     def test_is_valid_minimalist(self):
@@ -23,7 +24,8 @@ class testProofEntity(TestCase):
         nodes = []
         bitmap = "bf"
         depth = "0004"
-        self.assertTrue(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertTrue(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                         'Proof should be valid.')
 
     def test_is_valid_leaves_not_hex(self):
@@ -36,7 +38,8 @@ class testProofEntity(TestCase):
         ]
         bitmap = "bfdf7000"
         depth = "000400060006000500030002000400060007000800090009"
-        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                          'Proof should be valid.')
 
     def test_is_valid_nodes_not_hex(self):
@@ -49,7 +52,8 @@ class testProofEntity(TestCase):
         ]
         bitmap = "bfdf7000"
         depth = "000400060006000500030002000400060007000800090009"
-        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                          'Proof should be valid.')
 
     def test_is_valid_bitmap_too_short(self):
@@ -68,7 +72,8 @@ class testProofEntity(TestCase):
         ]
         bitmap = "bf"
         depth = "0004000600060005000600060005000600060005"
-        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                          'Proof should be valid.')
 
     def test_is_valid_depth_too_short(self):
@@ -81,7 +86,8 @@ class testProofEntity(TestCase):
         ]
         bitmap = "bfdf7000"
         depth = "000400060006000"
-        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                          'Proof should be valid.')
 
     def test_is_valid_depth_too_long(self):
@@ -94,5 +100,6 @@ class testProofEntity(TestCase):
         ]
         bitmap = "bfdf7000"
         depth = "0004000600060"
-        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap)),
+        anchor = get_anchor_dict()
+        self.assertFalse(Proof.isValid(Proof(leaves, nodes, depth, bitmap, anchor)),
                          'Proof should be valid.')

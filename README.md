@@ -117,9 +117,34 @@ except BloockException:
 
 ### Get and validate records proof
 
-The following example shows how to obtain a proof for an array of records and validate it.
-Keep in mind despite having Ethereum mainnet and Rinkeby available, only Bloockchain is
-usable when working with test api keys. 
+There are basically two ways to validate some records had been pushed to the blockchain: combining calls to *getProof* and *verifyProof*, or calling directly *verifyRecords*.
+
+The method *getProof* will, by default, return an integrity proof of the requested data in any of the compatible blockchain networks. It is possible to specify in which network and from which date it must, at least, be valid using the optional parameters *network* and *date*:
+
+```python
+from bloock import BloockClient, Record, BloockException, Network
+import os
+
+api_key = os.getenv("BLOOCK_APIKEY", default='apiKey')
+
+client = BloockClient(api_key)
+
+# records already sent and anchored by Bloock 
+records = [
+    Record.fromString('Example Data 1'),
+    Record.fromString('Example Data 2'),
+    Record.fromString('Example Data 3')
+]
+
+try:
+    proof = client.getProof(records, network = Network.BLOOCK_CHAIN, date = time.time())
+    timestamp = client.verifyProof(proof)   
+    print('When were our records sent to Bloockchain? : {}'.format(0<timestamp))
+except BloockException:
+    raise
+```
+
+For ease of use, there is also the wrapper method *verifyRecords* that will do the same as the two calls before, but this time around will only check proofs sent to Ethereum mainnet be default:
 
 ```python
 from bloock import BloockClient, Record, BloockException
@@ -137,16 +162,16 @@ records = [
 ]
 
 try:
-    proof = client.getProof(records)
-    # verifyProof's optional network parameter must be set to Network.BLOOCK_CHAIN when working with test api keys:
-    timestamp = client.verifyProof(proof)   
-    print('When were our records sent to blockchain? : {}'.format(0<timestamp))
-    # one can also use the following function:
-    timestamp2 = client.verifyRecords(records)
-    print('When were our records sent to blockchain? : {}'.format(0<timestamp2))
+    timestamp = client.verifyRecords(records)
+    print('When were our records sent to Ethereum mainnet? : {}'.format(0<timestamp))
 except BloockException:
     raise
 ```
+
+Keep in mind despite having Ethereum mainnet and Rinkeby available, only Bloockchain is
+usable when working with test api keys. 
+
+
 
 ### Full example
 

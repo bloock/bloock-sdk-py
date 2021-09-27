@@ -31,23 +31,21 @@ class AnchorService:
                 anchor = self.__anchor_repository.getAnchor(anchor_id)
                 if anchor.status == 'Success':
                     break
-                current_time = time.time()
-                if current_time > timeout_time:
-                    anchor = None
-                    break
-                Utils.sleep(1000)
 
             except HttpRequestException:
+                pass
+            
+            current_time = time.time()
+            while current_time < next_try_time and current_time < timeout_time:
+                Utils.sleep(200)
                 current_time = time.time()
-                while current_time < next_try_time and current_time < timeout_time:
-                    Utils.sleep(200)
-                    current_time = time.time()
-                next_try_time += old_fib+fib
-                aux = old_fib
-                old_fib = fib
-                fib = old_fib + aux
+            if current_time > timeout_time:
+                anchor = None
+                break
+            next_try_time += old_fib+fib
+            
+            aux = old_fib
+            old_fib = fib
+            fib = old_fib + aux
 
-                if current_time > timeout_time:
-                    anchor = None
-                    break
         return anchor

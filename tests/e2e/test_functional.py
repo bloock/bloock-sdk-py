@@ -1,5 +1,6 @@
+from bloock.config.entity.networks_entity import Network
 from unittest import TestCase
-import os
+import os, time
 from bloock.bloock_client import BloockClient
 from bloock.record.entity.record_entity import Record
 from bloock.anchor.entity.anchor_entity import Anchor
@@ -77,5 +78,16 @@ class testGetProof(TestCase):
             Record.fromString("Example Data 3")
         ]
         proof = sdk.getProof(records)
+        self.assertIsNotNone(proof)
+        self.assertIsInstance(proof, Proof)
+    
+    def test_get_proof_bloockchain_okay(self):
+        sdk = getSDK()
+        records = [
+            Record.fromString("Example Data 1"),
+            Record.fromString("Example Data 2"),
+            Record.fromString("Example Data 3")
+        ]
+        proof = sdk.getProof(records, network = Network.BLOOCK_CHAIN)
         self.assertIsNotNone(proof)
         self.assertIsInstance(proof, Proof)
