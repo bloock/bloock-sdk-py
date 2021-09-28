@@ -218,18 +218,18 @@ class testE2EAcceptanceBloockClient(TestCase):
         self.assertIsNotNone(send_receipt)
         sdk.waitAnchor(send_receipt[0].anchor)
         date = time.time()
-        timestamp = sdk.verifyRecords(records, date = date)
+        timestamp = sdk.verifyRecords(records, network = Network.BLOOCK_CHAIN, date = date)
         self.assertGreater(date, timestamp, 'Date was not greater than blockchain timestamp.')
 
     def test_verify_records_impossible_date_filter(self):
-        date = time.time()
+        date = time.time()-120
         sdk = getSDK()
         records = [Record.fromBytes(randHex(64))]
         send_receipt = sdk.sendRecords(records)
         self.assertIsNotNone(send_receipt)
         sdk.waitAnchor(send_receipt[0].anchor)
         with self.assertRaises(Exception) as context:
-            sdk.verifyRecords(records, date = date)
+            sdk.verifyRecords(records, network = Network.BLOOCK_CHAIN, date = date)
         self.assertTrue("HttpClient response was not successful: Proof not found." in str(context.exception))
 
 

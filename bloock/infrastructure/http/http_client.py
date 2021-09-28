@@ -42,7 +42,7 @@ class HttpClient:
             if 'error' in response_json:
                 raise HttpRequestException(response_json['error'])
             if 'message' in response_json:
-                 raise HttpRequestException(response_json['message'])
+                raise HttpRequestException(response_json['message'])
             raise HttpRequestException('Unkown server error')
         except RequestException as e:
             raise HttpRequestException(str(e))

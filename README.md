@@ -123,7 +123,7 @@ The method *getProof* will, by default, return an integrity proof of the request
 
 ```python
 from bloock import BloockClient, Record, BloockException, Network
-import os
+import os, time
 
 api_key = os.getenv("BLOOCK_APIKEY", default='apiKey')
 
@@ -181,8 +181,7 @@ This snippet shows a complete data cycle including: write, record status polling
 #!/usr/bin/env python3
 
 from bloock import BloockClient, Record, BloockException
-import random
-import os
+import os, random
 
 
 def randHex(l):

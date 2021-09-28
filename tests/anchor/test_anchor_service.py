@@ -66,7 +66,7 @@ class testAnchorService(TestCase):
         start = time.time()
         anchor = anchor_service.waitAnchor(1, timeout=120000)
         finish = time.time()
-        print(finish-start)
+        #print(finish-start)
         self.assertIsInstance(anchor, Anchor)
         self.assertEqual(
             MockAnchorRepo.getAnchor.call_count, self.maxCount+1)
