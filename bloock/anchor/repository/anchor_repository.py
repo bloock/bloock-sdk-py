@@ -14,7 +14,7 @@ class AnchorRepository:
         url = f'{self.__config_service.getApiBaseUrl()}/core/anchor/{anchor}'
         r = self.__http_client.get(url)
         return Anchor(
-            r['anchor_id'],
+            r['id'],
             r['block_roots'],
             r['networks'],
             r['root'],
